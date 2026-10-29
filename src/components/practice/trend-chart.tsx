@@ -105,9 +105,12 @@ export function TrendChart({ points, now }: { points: readonly TrendPoint[]; now
           ))}
           {/* Pass mark: a labelled reference line, heavier than the grid. */}
           <line x1={PAD_L} x2={W - PAD_R} y1={y(75)} y2={y(75)} stroke="var(--wattle-edge)" strokeWidth="1.5" />
-          <text x={W - PAD_R} y={y(75) - 7} textAnchor="end" className="fill-wattle-text text-[12px] font-bold">
-            Pass mark 75%
-          </text>
+          {/* On narrow charts the label would sit on the data; the key below names the line instead. */}
+          {W >= 520 && (
+            <text x={W - PAD_R} y={y(75) - 7} textAnchor="end" className="fill-wattle-text text-[12px] font-bold">
+              Pass mark 75%
+            </text>
+          )}
 
           {area && <path d={area} fill="var(--euc)" opacity="0.1" />}
           {n > 1 && (

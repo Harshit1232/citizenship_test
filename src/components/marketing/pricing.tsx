@@ -17,13 +17,16 @@ const FULL = [
   "Your progress on all your devices",
 ];
 
-export function Pricing() {
+/** `asPage` makes the heading the page's h1 (on /pricing/); on the home page it is an h2. */
+export function Pricing({ asPage = false }: { asPage?: boolean }) {
+  const Heading = asPage ? "h1" : "h2";
+  const PlanHeading = asPage ? "h2" : "h3";
   return (
     <section id="pricing" aria-labelledby="pricing-title" className="mx-auto max-w-[1200px] px-5 py-24 sm:px-8 lg:py-32">
       <div className="max-w-[46rem]">
-        <h2 id="pricing-title" className="font-display text-display-sm font-bold tracking-[-0.03em]">
+        <Heading id="pricing-title" className="font-display text-display-sm font-bold tracking-[-0.03em]">
           Free to practise. One payment for the rest.
-        </h2>
+        </Heading>
         <p className="mt-5 text-lead">
           You need this for a few weeks, not forever. So there is no subscription: pay once, keep
           access, and get a refund within {site.refundDays} days if it isn&apos;t for you.
@@ -32,7 +35,7 @@ export function Pricing() {
 
       <div className="mt-12 grid gap-5 lg:grid-cols-2">
         <article className="flex flex-col rounded-lg border-2 border-euc bg-surface p-7 shadow-2 sm:p-9">
-          <h3 className="font-display text-title font-bold">Free</h3>
+          <PlanHeading className="font-display text-title font-bold">Free</PlanHeading>
           <p className="mt-3 flex items-baseline gap-2">
             <span className="font-display text-display-sm font-bold tracking-[-0.03em] text-ink">A$0</span>
             <span className="text-small text-muted">no sign-up</span>
@@ -49,7 +52,7 @@ export function Pricing() {
 
         <article className="flex flex-col rounded-lg border border-line bg-surface/70 p-7 sm:p-9">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="font-display text-title font-bold">Full access</h3>
+            <PlanHeading className="font-display text-title font-bold">Full access</PlanHeading>
             <span className="rounded-sm bg-wattle-tint px-2.5 py-1 text-caption font-bold text-wattle-text">
               In development
             </span>

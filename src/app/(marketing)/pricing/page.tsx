@@ -33,7 +33,7 @@ export default function PricingPage() {
     <>
       <SiteHeader />
       <main id="main">
-        <Pricing />
+        <Pricing asPage />
         <section aria-labelledby="pay-qa" className="mx-auto max-w-[1200px] px-5 pb-28 sm:px-8">
           <h2 id="pay-qa" className="font-display text-heading font-bold tracking-[-0.02em]">
             About paying

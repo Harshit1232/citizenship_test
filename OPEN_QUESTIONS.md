@@ -11,7 +11,7 @@ Each item has a default already in the code, so nothing is blocked. Each default
 2. **Price.** A$29 one-off is a placeholder. The pricing card now says "one payment", not "including GST". The "including GST" wording was removed because GST registration is only required above A$75,000 turnover, and claiming it while not registered would be wrong. Confirm your GST status before showing any tax wording. *(I'm not a tax adviser; check this with an accountant or the ATO.)*
 3. **Refund promise.** The site says "14-day refund". That is a promise the business must honour, on top of Australian Consumer Law guarantees, which can't be excluded. Keep it or change it before taking money.
 4. **Waitlist.** The "Full access" button is disabled ("Coming soon") because there is nowhere to send sign-ups. Choose a handler (an email tool's form, or a simple endpoint once the export goes away) and set `waitlistEnabled`.
-5. **Who you are.** The trust section says "We are independent". People paying for this will want a name or company behind it. An About page with an ABN is planned for the next checkpoint.
+5. **Who you are.** `/about/` now exists, but it says nothing about who runs the site, because I didn't want to invent that. People paying for this will want a name or company behind it, and an ABN if you have one. Tell me what to say and I'll add it.
 
 ## Behaviour changes from the old HTML, kept on purpose
 
@@ -26,3 +26,13 @@ Each item has a default already in the code, so nothing is blocked. Each default
 11. **Screenshots of the real test.** The "how it works" phone mockups are our own UI, not the official test. Don't add screenshots of the official test or the Home Affairs practice test, because their terms may not allow it.
 12. **Answer options.** The bank uses three options per question (`meta.note`: one distractor was dropped from a four-option source). Check that three options still matches the current real test before saying "works like the real one" in paid marketing. *(I believe the real test uses three options per question, but I haven't verified that for this checkpoint.)*
 13. **Hero headline.** "Pass your Australian citizenship test the first time" reads as an outcome promise, and there is no data on our users' pass rates to back it. Under Australian Consumer Law, claims about future outcomes need reasonable grounds. Lower-risk options: "Practise for the citizenship test the way it's actually marked", or keep the promise but move it to after launch, once you have first-attempt pass data from users. *(Not legal advice.)*
+
+## Added at checkpoint 2
+
+14. **Where the paywall goes.** The old app gave away study mode, custom topic tests and analytics, so the rebuild keeps them free, and the pricing card now says so. The paid list is down to three planned items: a values mastery track, a readiness check, and progress on all devices. Decide the free/paid line before launch. Taking a free feature away later annoys exactly the people most likely to pay.
+15. **Contact address (blocking).** `site.contactEmail` is empty, so the corrections and privacy pages say contact details are being set up. A corrections process with no way to report anything is not credible. Use a dedicated address on your own domain, not a personal inbox.
+16. **Host.** Pick one (Cloudflare Pages and Netlify both read `public/_headers`), name it in the privacy page, and check the live headers after the first deploy.
+17. **Selling from outside Australia.** If the business is based outside Australia, Australian GST can still apply to digital services sold to Australian consumers once those sales pass the registration threshold. A merchant of record (Paddle, Lemon Squeezy) registers, charges and pays it for you. *(Not tax advice; I may be wrong on the details. Confirm with an accountant or the ATO before you take money.)*
+18. **History and analytics are now one "Progress" page.** In the old app they were two pages that pulled from the same data. Say if you want them split again.
+19. **Heatmap shading for one-off misses.** A question missed once out of one attempt shows in the darkest shade ("missed most times"), as in the old app. It's accurate, but it can look alarming after a single test. One option is to only use the darkest shades after two or more attempts.
+

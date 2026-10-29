@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0: checkpoint 2 (2026-10-29)
+
+### Added
+- Practice area with a shared section nav: overview, study, progress and settings, ported from the original app with the same `ocb.*` storage keys
+- Progress charts: score trend (keyboard and hover readout), accuracy by part and topic, question heatmap with a detail panel
+- Settings save as you change them; download your data as JSON; delete history
+- About, pricing, privacy, terms and corrections pages; privacy and terms are marked as drafts
+- A question reference and "Report a mistake" link under every explanation
+- Security headers (`public/_headers`) and `docs/security.md`
+
+### Changed
+- History and analytics are combined into one progress page
+- The test start screen names the custom settings in use and links to settings
+- "Save and exit" now returns to the practice overview
+- The pricing page lists study and topic tests as free; they were free in the original app
+
+### Removed
+- Two unused font packages; their licences are kept beside the font files
+
 ## 0.1.0: checkpoint 1 (2026-10-29)
 
 The single-file app has been rebuilt as a Next.js 16 project.
@@ -18,4 +37,4 @@ The single-file app has been rebuilt as a Next.js 16 project.
 - Dimmed answer options in feedback use muted colour instead of opacity, so the text stays readable
 
 ### Not yet ported
-- Study, history, analytics, settings, export and import
+- Study, history, analytics, settings and data export

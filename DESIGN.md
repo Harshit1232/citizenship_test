@@ -55,6 +55,23 @@ Rules:
 3. The exam never animates anything that competes with reading: no parallax, no confetti, no timer pulsing except in the last minute.
 4. Durations are 150 to 400 ms with the `--motion-out` easing. The hero gate is the only sequence longer than a second.
 
+## Charts
+
+Charts follow a few rules:
+
+- One series per chart.
+- Recessive solid gridlines and 2 px lines.
+- Bars no thicker than 10 px, with a square base and a rounded end.
+- Every value printed as text, so nothing depends on reading colour or bar length.
+
+| Chart | Encoding | Accessibility |
+|---|---|---|
+| Score trend (`trend-chart.tsx`) | Line with a 10% area wash. Passes are filled dots; a not-pass is a hollow red ring, so shape differs as well as colour. A solid gold reference line marks 75%. | Focusable, and arrow keys read each test aloud. The history table is the table view. |
+| Bars (`MeterRow`) | One colour for every bar. A hairline marks 75%. | The percentage and "x of y correct" are always printed. |
+| Heatmap (`heatmap.tsx`) | Green wash for never missed, then four steps of one red ramp. The miss count is printed in each square. | One tab stop, arrow keys between squares, Enter opens the question. |
+
+Charts are drawn at their real pixel width (a ResizeObserver), not scaled down from a fixed viewBox, so labels stay readable on phones.
+
 ## Exam screen rules
 
 - Native radio inputs inside labels. Keys A, B and C pick an answer.

@@ -1,45 +1,79 @@
-# Current state: checkpoint 1 (29 October 2026)
+# Current state: checkpoint 2 (29 October 2026)
 
 ## Built
 
-- **Design system:** tokens, light and dark themes, type scale, components. Live at `/design/`.
-- **Marketing home:**
-  - Hero with the animated values gate and a parallax landscape
-  - Values-rule section with sourced pass-rate figures
-  - Scroll-driven "how it works"
-  - Trust section, pricing (paid tier marked "In development"), FAQ, footer with CC BY attribution
-- **Mock test:**
-  - Start screen
-  - Running test with timer, question map, review flags, Listen (speech), A/B/C keys and save-and-resume
-  - Finish dialog
-  - Results showing both gates, a by-part breakdown and every wrong answer with its explanation
-- **Values check:** 10 values questions with instant feedback.
-- **Storage:** reads and writes the old file's `ocb.*` keys, and adds `ocb.schema` (v1). Corrupt entries are dropped and valid data is kept.
+- **Design system:** tokens, light and dark themes, type scale and components. Live at `/design/`.
+- **Marketing site**
+  - Home page:
+    - hero with the animated values gate and a parallax landscape
+    - values-rule section with sourced pass-rate figures
+    - scroll-driven "how it works"
+    - trust section, pricing, FAQ, and a footer with the CC BY attribution
+  - Content pages:
+    - `/about/`
+    - `/pricing/`
+    - `/privacy/` and `/terms/`, both shown as drafts until a lawyer reviews them
+    - `/corrections/`, with a public log of fixes
+- **Practice area.** A shared section nav runs across every practice page: inline on desktop, a scrollable row on phones.
+  - `/practice/`, the overview:
+    - a resume card for a paused test
+    - links to start a test, the values check or study
+    - stat tiles, weakest and strongest topics, and the last five tests
+  - `/practice/test/`, the mock test:
+    - timer, question map, review flags, Listen, A/B/C keys, save and resume
+    - results showing both pass conditions
+    - a notice when custom settings are in use
+  - `/practice/values-check/`: 10 values questions with instant feedback.
+  - `/practice/study/`:
+    - flashcards or a list, filtered by part or topic, or only the questions you've missed
+    - shuffle, and the Space and arrow keys
+    - your place is saved in `ocb.study`, the same key the old app used
+  - `/practice/progress/`, which combines the old History and Analytics pages:
+    - stat tiles
+    - score trend chart, which you can explore by keyboard
+    - accuracy by part and by topic
+    - a suggested next test aimed at weak topics
+    - a question heatmap with a detail panel
+    - "keeps catching you out"
+    - the full test history, with an option to delete it
+  - `/practice/settings/`:
+    - the real test's format or a custom one: topics, length, timer and the values rules
+    - appearance
+    - download your data as JSON
+    - delete your history
+    - saves as you change things
+- **Explanations** now show the question's reference number and a "Report a mistake" link.
+- **Security:**
+  - headers in `public/_headers`
+  - the plan in `docs/security.md`
+  - unused font packages removed; 3 runtime dependencies left
+- **Storage:** the same `ocb.*` keys as the old app, plus `ocb.schema` (v1).
 
-## Not built yet (old HTML still covers these)
+## Not built yet
 
-- Study by booklet part, history, analytics, settings, and data export or import
-- Pricing, About, Corrections, Privacy and Terms pages
-- Accounts, payments, waitlist
+- Accounts, payments and a waitlist
+- A contact address (`site.contactEmail` is empty, so the corrections and privacy pages say contact is being set up)
+- CI on GitHub, branch protection and Dependabot (owner actions listed in `docs/security.md`)
 
-## Verified
+## Verified (29 October 2026)
 
 | Check | Result |
 |---|---|
-| Unit tests (Vitest) | 38 passing: paper building, marking, session restore, migration, marketing numbers |
+| Unit tests (Vitest) | 59 passing: paper building, marking, session restore, migration, marketing numbers, progress aggregates, study filters and saved order, export and delete |
 | TypeScript, ESLint | Clean |
-| Static build | 4 routes plus a 404 page |
-| axe-core (WCAG 2.2 AA plus best practice) | 0 violations on home, exam start, question, finish dialog, results, values check, design and 404. Light and dark, 1280 and 360 px wide. |
-| Keyboard-only full test | Passed. Skip link first; A/B/C to answer; visible focus on every control; focus moves to each new question heading; Escape closes the finish dialog and returns focus; focus lands on the result heading. |
-| Returning user from the old HTML | Ran the old file on the same origin, finished one test and paused a second at question 4 with 3 answers. Opened the new app: theme kept, history and question stats byte-identical, the paused test resumed at question 4 with the clock intact. |
-| Horizontal overflow | None at 360 or 1280 px, either theme |
-| Console errors | None on any route |
-| Home page JS | About 156 KB gz in modern browsers (a 39 KB legacy polyfill loads only in old browsers). About 11 KB is app code. |
-| Question bank | 33 KB gz lazy chunk, loaded on practice routes only. CSS is about 10 KB gz. |
+| Static build | 13 routes plus a 404 page |
+| axe-core (WCAG 2.2 AA plus best practice) | 0 violations on every route, light and dark, 1280 and 360 px wide. Checked with sample data, including revealed flashcards, list view, custom settings, the heatmap detail panel, the delete dialog and every exam state. |
+| Keyboard | Full mock test by keyboard only. Study: Space reveals then moves on; arrows move. Heatmap: one tab stop, arrows move, Enter opens the detail. Chart: arrows read out each test. Settings are reachable and save. |
+| Content-Security-Policy | Every route loads under the policy in `public/_headers` with 0 violations. A deliberately strict policy does produce violations, so the test works. |
+| Returning user from the old HTML | Checked at checkpoint 1: the old file's data carries over byte-identical. Storage keys are unchanged since then. |
+| Horizontal overflow, console errors | None on any route at 360 or 1280 px, either theme |
+| JavaScript weight | About 154 to 158 KB gz per page in modern browsers, almost all of it the Next/React runtime. The question bank is a 33 KB gz chunk loaded on practice pages only. CSS is about 12 KB gz. |
+| Dependencies | `npm audit`: 0 known vulnerabilities |
 
 ## Not verified
 
 - Lighthouse or real-device performance on a mid-range phone
 - Screen readers (VoiceOver, TalkBack). axe and keyboard checks are not a substitute.
-- Safari and Firefox. Screenshots and automated checks used Chromium only. Scroll-driven parallax is Chromium-only today; other browsers show a static landscape by design.
+- Safari and Firefox. All automated checks used Chromium. Scroll-driven parallax only works in Chromium today; other browsers show a still landscape by design.
+- The headers on a real host, because nothing is deployed yet
 - The question bank's content (see `CONTENT_ISSUES.md`)
