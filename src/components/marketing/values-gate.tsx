@@ -197,7 +197,7 @@ function PaperCard({ paper, step, run }: { paper: Paper; step: number; run: numb
           <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
             {t.passed ? <IconCheck size={18} strokeWidth={2.8} /> : <IconCross size={18} strokeWidth={2.8} />}
           </span>
-          <span className="font-display text-[1.125rem] font-bold sm:text-title">{t.passed ? `${paper.name} passes` : `${paper.name} doesn't pass`}</span>
+          <span className="font-display text-[1.125rem] font-bold sm:text-title">{t.passed ? "Passes" : "Doesn’t pass"}</span>
         </div>
       </div>
     </article>
