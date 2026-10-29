@@ -9,7 +9,7 @@ import { cx } from "@/lib/cx";
 export const PRACTICE_NAV = [
   { href: "/practice/", label: "Overview" },
   { href: "/practice/test/", label: "Practice test" },
-  { href: "/practice/values-check/", label: "Values check" },
+  { href: "/practice/values/", label: "Values" },
   { href: "/practice/study/", label: "Study" },
   { href: "/practice/progress/", label: "Progress" },
   { href: "/practice/settings/", label: "Settings" },
@@ -21,7 +21,10 @@ function normalise(path: string): string {
 
 function isActive(current: string, href: string): boolean {
   const here = normalise(current);
-  return href === "/practice/" ? here === href : here.startsWith(href);
+  if (href === "/practice/") return here === href;
+  // The quick values check lives under its own path but belongs to Values.
+  if (href === "/practice/values/" && here.startsWith("/practice/values-check/")) return true;
+  return here.startsWith(href);
 }
 
 /**

@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { officialLinks } from "@/lib/site";
-import { PASS_RATE_CHANGE, VALUES_AREAS } from "@/lib/marketing-data";
+import { BANK_FACTS, PASS_RATE_CHANGE, VALUES_AREAS } from "@/lib/marketing-data";
 
 export function ValuesRule() {
   return (
@@ -63,14 +64,16 @@ export function ValuesRule() {
             ))}
           </ol>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <ButtonLink
-              href="/practice/values-check/"
-              size="lg"
-              variant="gold"
-            >
-              Try the free values check
+            <ButtonLink href="/practice/values/" size="lg" variant="gold">
+              Learn the values with {BANK_FACTS.valuesScenarios} scenarios
             </ButtonLink>
-            <p className="text-small text-band-muted">10 questions, with the reason after each one.</p>
+            <p className="text-small text-band-muted">
+              One for each rule in Part 4 of the booklet. Or try the{" "}
+              <Link href="/practice/values-check/" className="font-bold text-band-ink underline underline-offset-2">
+                quick values check
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </div>

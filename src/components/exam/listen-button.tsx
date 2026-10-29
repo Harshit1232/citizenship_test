@@ -7,8 +7,9 @@ import { cx } from "@/lib/cx";
 const noop = () => () => {};
 
 /**
- * Reads the question and its options aloud with the browser's built-in speech
- * (no third-party service, works offline). Hidden where unsupported.
+ * Reads the question and its options aloud with the browser's built-in speech.
+ * Some browsers use an online voice service for this (see the privacy page).
+ * Hidden where unsupported.
  */
 export function ListenButton({ text, className }: { text: string; className?: string }) {
   const supported = useSyncExternalStore(

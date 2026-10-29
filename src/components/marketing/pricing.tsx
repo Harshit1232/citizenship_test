@@ -69,6 +69,9 @@ export function Pricing({ asPage = false }: { asPage?: boolean }) {
               <Feature key={f}>{f}</Feature>
             ))}
           </ul>
+          <p className="mt-5 rounded-sm bg-wattle-tint px-3 py-2 text-small text-ink">
+            The values mastery track and readiness check are free to use while we are in early access.
+          </p>
           <div className="mt-auto pt-9">
             <Button size="lg" variant="secondary" disabled={!site.waitlistEnabled} className="w-full sm:w-auto">
               {site.waitlistEnabled ? "Join the waitlist" : "Coming soon"}

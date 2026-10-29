@@ -36,3 +36,9 @@ Each item has a default already in the code, so nothing is blocked. Each default
 18. **History and analytics are now one "Progress" page.** In the old app they were two pages that pulled from the same data. Say if you want them split again.
 19. **Heatmap shading for one-off misses.** A question missed once out of one attempt shows in the darkest shade ("missed most times"), as in the old app. It's accurate, but it can look alarming after a single test. One option is to only use the darkest shades after two or more attempts.
 
+## Added with the values track
+
+20. **Values mastery and the readiness check are free for now.** Your guide puts them in the paid unlock. They are labelled "free while in early access" on the site, so charging later stays honest. Decide when they move behind the paywall. Your 90-day plan puts that at the paid beta, weeks 8 to 11.
+21. **Scenario content needs a human review before paid launch.** See `docs/values-scenarios.md`. All 38 were written from the booklet, and their facts and page numbers were spot-checked against the official PDF. A line-by-line check by you, or by someone you trust, is still needed.
+22. **Exam-day simulator (launch feature 4 in your guide) is not built.** It means matching the official practice test's screen, and nobody has looked at that screen yet. Take screenshots of the official practice test (https://citizenshippracticetest.homeaffairs.gov.au/) for me, and I can match the layout and controls.
+

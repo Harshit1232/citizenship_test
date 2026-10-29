@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Values mastery track.** 38 scenarios, one for each rule in Part 4 of *Our Common Bond*, grouped into the five values areas. Each puts a rule in an everyday situation, asks one question, then explains the value, why each answer is right or wrong, and the booklet page. Answer first, with an optional hint. Scenarios can be linked to directly. Tests check that the scenarios teach all 54 values questions in the bank, and check sentence length and answer balance.
+- **Values gate.** 10 values questions in a row, 2 from each area, mixing scenarios and bank questions. One wrong answer ends the run.
+- **Readiness check** on the overview and progress pages. It is a published rule, not a prediction: the last 3 real-format tests at 85% or more with no values errors, plus the gate cleared.
+- "Values" in the practice nav. The home page and pricing point to the values track. Values mastery and the readiness check are free during early access.
+
 ### Changed
 - The home page widget about the values rule is redesigned after user feedback that it was hard to follow. It now compares two example tests: Jordan gets 19 of 20 and doesn't pass, and Alex gets 16 of 20 and passes. The values questions sit on their own row, each pass rule is checked off in words, and a takeaway line says why. The old tap-to-flip sandbox is gone.
 

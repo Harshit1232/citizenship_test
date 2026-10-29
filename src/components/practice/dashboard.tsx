@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CATEGORY_BY_ID, QUESTION_BY_ID, QUESTIONS, RULES, VALUES_QUESTIONS } from "@/lib/bank";
+import { CATEGORY_BY_ID, QUESTION_BY_ID, QUESTIONS, RULES } from "@/lib/bank";
 import { answeredCount, isExpired, loadActive } from "@/lib/exam/session";
 import { categoryRows, formatWhen, weakAndStrong } from "@/lib/progress";
 import { loadHistory, summariseHistory } from "@/lib/stats";
+import { loadValues, overallProgress } from "@/lib/values-progress";
 import { migrateStorage } from "@/lib/storage/migrate";
 import { ButtonLink } from "@/components/ui/button";
 import { IconChevronRight, IconClock } from "@/components/ui/icons";
 import { cx } from "@/lib/cx";
 import { HistoryTable } from "./history-table";
+import { ReadinessCard } from "./readiness-card";
 import { Card, CardTitle, EmptyState, MeterRow, PageIntro, PassMarkNote, StatGrid, StatTile } from "./ui";
 
 /** Rendered in the browser only (see loaders), so storage is read during the first render. */
@@ -19,9 +21,10 @@ export function Dashboard() {
     migrateStorage();
     const now = Date.now();
     const history = loadHistory();
-    return { now, history, active: loadActive(QUESTION_BY_ID) };
+    return { now, history, active: loadActive(QUESTION_BY_ID), values: loadValues() };
   });
-  const { now, history, active } = data;
+  const { now, history, active, values } = data;
+  const valuesDone = overallProgress(values);
   const summary = summariseHistory(history);
   const rows = categoryRows(history, CATEGORY_BY_ID);
   const areas = weakAndStrong(rows);
@@ -56,10 +59,10 @@ export function Dashboard() {
             primary
           />
           <StartCard
-            href="/practice/values-check/"
-            title="Values check"
-            body="10 Australian values questions, with the reason after each answer."
-            meta={`${VALUES_QUESTIONS.length} in the bank`}
+            href="/practice/values/"
+            title="Values mastery"
+            body="Learn each values rule with a short scenario, then prove it at the values gate."
+            meta={valuesDone.done ? `${valuesDone.done} of ${valuesDone.total} scenarios done` : `${valuesDone.total} scenarios`}
           />
           <StartCard
             href="/practice/study/"
@@ -69,6 +72,8 @@ export function Dashboard() {
           />
         </ul>
       </section>
+
+      <ReadinessCard history={history} gate={values.gate} className="mt-6" />
 
       {summary.n === 0 ? (
         <Card className="mt-10">

@@ -72,6 +72,13 @@ Charts follow a few rules:
 
 Charts are drawn at their real pixel width (a ResizeObserver), not scaled down from a fixed viewBox, so labels stay readable on phones.
 
+## Values track
+
+- **Answer first.** The situation and question come first, and the meaning appears after answering (or on "Show a hint"). See `docs/values-scenarios.md`.
+- **Colour roles:** gold (`wattle`) marks values things (the gate's streak, area chips, "Remember" boxes); green and red are only right and wrong.
+- **The gate's streak bar** fills gold for each right answer and turns red where a run ended. The text "x of 10 in a row" is always shown too.
+- **The readiness check** shows its rule in words and ticks off each part. It never shows a percentage or a "chance of passing".
+
 ## Exam screen rules
 
 - Native radio inputs inside labels. Keys A, B and C pick an answer.

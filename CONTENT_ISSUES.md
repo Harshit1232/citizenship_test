@@ -4,7 +4,8 @@ These are problems found in the question bank (`src/data/question-bank.json`). A
 
 | # | Question | Issue | Severity | Status |
 |---|---|---|---|---|
-| 1 | Q176 "Who is Australia's Head of State?" | The answer names King Charles III. The bank's source line says *Our Common Bond* © 2020, which predates his reign, so the bank was edited from a later edition or by hand. If the explanations' page numbers come from the 2020 edition, they may not match the booklet people download today. | Medium: wrong page numbers erode the "every answer traced to its page" promise | Open: check which edition the page numbers came from, then update `meta.source` |
+| 1 | Q176 "Who is Australia's Head of State?" | The answer names King Charles III, while the bank says © 2020. | | **Resolved 30 Oct 2026:** the current official PDF is still marked © 2020 and names King Charles III on page 26, so the bank matches it. |
+| 4 | Q314 "What do Australian citizens pledge…?" | The bank cites page 38, but the pledge text is on page 4 of the current PDF. | Low | Open: change the source to p.4 after a human check, then log it on `/corrections/` |
 | 2 | Bank-wide | `meta.note` says IDs don't match the four-option PDF answer key, and one distractor per question was dropped. Nobody has checked that the dropped distractor was always the weakest. | Low | Open |
 | 3 | Bank-wide | Page references in explanations have not been spot-checked against the current PDF. | Medium | Open: check a sample of 30 before launch |
 

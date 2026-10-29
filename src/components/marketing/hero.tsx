@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/button";
 import { Landscape, Pollen } from "./landscape";
-import { ValuesGate } from "./values-gate";
+import { ValuesExplainer } from "./values-explainer";
 
 export function Hero() {
   return (
@@ -34,7 +34,7 @@ export function Hero() {
         </div>
 
         <div className="anim-rise relative z-10 mt-12 lg:mt-16" style={{ animationDelay: "240ms" }}>
-          <ValuesGate />
+          <ValuesExplainer />
         </div>
       </div>
       <Landscape seed={7} className="-mt-24 h-56 sm:-mt-28 sm:h-72 lg:-mt-36 lg:h-96" />

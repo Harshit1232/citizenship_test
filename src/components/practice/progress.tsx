@@ -17,6 +17,8 @@ import { loadSettings, saveSettings } from "@/lib/settings";
 import { loadHistory, loadStats, summariseHistory } from "@/lib/stats";
 import { migrateStorage } from "@/lib/storage/migrate";
 import { clearProgress } from "@/lib/user-data";
+import { loadValues } from "@/lib/values-progress";
+import { ReadinessCard } from "./readiness-card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { IconCheck } from "@/components/ui/icons";
@@ -41,11 +43,11 @@ export function Progress() {
   const router = useRouter();
   const [data, setData] = useState(() => {
     migrateStorage();
-    return { now: Date.now(), history: loadHistory(), stats: loadStats() };
+    return { now: Date.now(), history: loadHistory(), stats: loadStats(), gate: loadValues().gate };
   });
   const [confirmClear, setConfirmClear] = useState(false);
   const [showAllTopics, setShowAllTopics] = useState(false);
-  const { now, history, stats } = data;
+  const { now, history, stats, gate } = data;
 
   const summary = summariseHistory(history);
   const rows = categoryRows(history, CATEGORY_BY_ID);
@@ -121,6 +123,8 @@ export function Progress() {
             accent
           />
         </StatGrid>
+
+        <ReadinessCard history={history} gate={gate} className="mt-6" />
 
         <Card className="mt-6" aria-labelledby="trend-title">
           <CardTitle id="trend-title">Score in each test</CardTitle>
@@ -281,7 +285,7 @@ export function Progress() {
             onClick={() => {
               clearProgress();
               setConfirmClear(false);
-              setData({ now: Date.now(), history: [], stats: {} });
+              setData({ now: Date.now(), history: [], stats: {}, gate });
             }}
           >
             Delete history

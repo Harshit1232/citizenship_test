@@ -49,7 +49,7 @@ function tally(p: Paper) {
 const STEP_AT = [0, 1150, 1650, 2150, 2700];
 const LAST = 5;
 
-export function ValuesGate() {
+export function ValuesExplainer() {
   const ref = useRef<HTMLDivElement>(null);
   // Low threshold: on phones the card is taller than the screen, so a high one might never be reached.
   const inView = useInViewOnce(ref, 0.15);
@@ -106,11 +106,11 @@ export function ValuesGate() {
         </p>
         <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2">
           <Link
-            href="/practice/values-check/"
+            href="/practice/values/"
             tabIndex={shown >= LAST ? undefined : -1}
             className="font-bold text-wattle-text underline-offset-4 hover:underline"
           >
-            Practise the values questions
+            Learn the values with scenarios
             <IconChevronRight size={18} className="ml-0.5 inline-block align-[-4px]" />
           </Link>
           {!reduce && (

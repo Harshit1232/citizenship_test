@@ -10,6 +10,8 @@ export const KEYS = {
   theme: "ocb.theme",
   active: "ocb.active",
   study: "ocb.study",
+  /** New: values mastery progress and the values gate. */
+  values: "ocb.values",
   /** New: marks which storage schema version the data is in. */
   schema: "ocb.schema",
 } as const;

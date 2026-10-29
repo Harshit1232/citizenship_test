@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SCENARIOS } from "@/data/values-scenarios";
 import { CATEGORY_BY_ID, QUESTION_BY_ID, QUESTIONS } from "./bank";
 import { BANK_FACTS, SAMPLE_QUESTION, VALUES_AREAS } from "./marketing-data";
 
@@ -24,5 +25,11 @@ describe("marketing facts match the question bank", () => {
     expect(q?.answerIndex).toBe(SAMPLE_QUESTION.answerIndex);
     expect(q?.explanation).toBe(SAMPLE_QUESTION.explanation);
     expect(q?.source).toBe(SAMPLE_QUESTION.source);
+  });
+});
+
+describe("values scenario count used in marketing copy", () => {
+  it("matches the scenarios that exist", () => {
+    expect(BANK_FACTS.valuesScenarios).toBe(SCENARIOS.length);
   });
 });

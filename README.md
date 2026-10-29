@@ -2,7 +2,7 @@
 
 "Wattle" is a working name (see `OPEN_QUESTIONS.md`).
 
-A practice site for the Australian citizenship test. It has a mock test that follows the published rules: 20 questions, 45 minutes, a 75% pass mark, and all five Australian values questions correct. Around it are a values check, a study mode, a progress page and settings. Every explanation points back to its page in *Australian Citizenship: Our Common Bond*.
+A practice site for the Australian citizenship test. It has a mock test that follows the published rules: 20 questions, 45 minutes, a 75% pass mark, and all five Australian values questions correct. Around it are a values mastery track (38 scenarios and a values gate), a quick values check, a study mode, a progress page with a readiness check, and settings. Every explanation points back to its page in *Australian Citizenship: Our Common Bond*.
 
 This replaces the single-file `citizenship-mock-test.html`. A returning user's saved data in that file's `ocb.*` storage keys carries over unchanged (tested; see `docs/current-state.md`).
 
@@ -38,11 +38,14 @@ Payments and accounts need a server. When they're added, drop `output: "export"`
 
 | Route | What |
 |---|---|
-| `/` | Marketing home: hero with the animated "values gate", the values rule, how it works, trust, pricing, FAQ |
+| `/` | Marketing home: hero with the "why 19 out of 20 can still fail" comparison, the values rule, how it works, trust, pricing, FAQ |
 | `/about/`, `/pricing/`, `/corrections/` | About, pricing with payment questions, the corrections log |
 | `/privacy/`, `/terms/` | Drafts until reviewed by a lawyer (`site.legalReviewed`) |
 | `/practice/` | Overview: resume a paused test, start practising, scores, weakest topics, recent tests |
 | `/practice/test/` | The mock test: start, running, results. Resumes a paused test. |
+| `/practice/values/` | Values mastery hub: progress by area, values gate status |
+| `/practice/values/<area>/` | Scenarios for one values area (`law`, `freedoms`, `equality`, `respect`, `community`); `#<scenario-id>` links to one scenario |
+| `/practice/values/gate/` | The values gate: 10 values questions in a row, 2 from each area |
 | `/practice/values-check/` | Ten values questions with instant feedback |
 | `/practice/study/` | Flashcards or list, by part or topic, or only missed questions |
 | `/practice/progress/` | Score trend, accuracy by part and topic, question heatmap, full history |
@@ -57,10 +60,12 @@ src/
   components/
     marketing/         home page sections, content page shell
     exam/              test UI: answer options, timer, map, results, values check
-    practice/          practice nav, overview, study, progress (charts, heatmap), settings
+    practice/          practice nav, overview, study, progress (charts, heatmap), settings, readiness check
+    values/            values hub, scenario player, values gate
     ui/                Button, Dialog, icons
     brand/ theme/ design/
   data/question-bank.json   336 questions (54 values), extracted from the original HTML
+  data/values-scenarios.ts  38 values scenarios, one per rule in Part 4 of the booklet
   lib/
     exam/              plan.ts (paper building), score.ts (marking), session.ts (save and resume)
     storage/           localStorage wrapper with in-memory fallback, schema migration
@@ -68,6 +73,8 @@ src/
     study.ts           study filters and saved position
     user-data.ts       download and delete the data stored in the browser
     corrections.ts     the public corrections log
+    values-progress.ts scenario progress and the values gate (ocb.values)
+    readiness.ts       the published readiness rule
     site.ts            name, price, official links: the owner's decisions in one file
     marketing-data.ts  numbers used in marketing copy, tested against the bank
 ```
@@ -78,6 +85,7 @@ src/
 - `docs/adr/001-stack.md`: why Next.js with a static export, and what it costs
 - `docs/current-state.md`: what is built, what was verified, what is not done
 - `docs/security.md`: threat model and the security plan by phase
+- `docs/values-scenarios.md`: why there are 38 values scenarios, how they work, writing and review rules
 - `OPEN_QUESTIONS.md`: decisions the owner needs to make
 - `CONTENT_ISSUES.md`: question-bank problems found so far
 - `CHANGELOG.md`

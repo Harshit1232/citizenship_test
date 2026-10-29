@@ -40,6 +40,8 @@ export const VALUES_AREAS = [
 export const BANK_FACTS = {
   totalQuestions: 336,
   valuesQuestions: 54,
+  /** Values mastery scenarios (src/data/values-scenarios.ts). Checked by test. */
+  valuesScenarios: 38,
 } as const;
 
 /** Copied verbatim from question 264 in the bank (checked by test). */
