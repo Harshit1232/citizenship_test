@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- The home page widget about the values rule is redesigned after user feedback that it was hard to follow. It now compares two example tests: Jordan gets 19 of 20 and doesn't pass, and Alex gets 16 of 20 and passes. The values questions sit on their own row, each pass rule is checked off in words, and a takeaway line says why. The old tap-to-flip sandbox is gone.
+
 ## 0.2.0: checkpoint 2 (2026-10-29)
 
 ### Added

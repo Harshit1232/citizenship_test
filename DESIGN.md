@@ -43,7 +43,7 @@ Contrast was checked with a script for both themes. axe-core reports zero violat
 
 | Where | What | How |
 |---|---|---|
-| Hero | The values gate marks 20 tiles, then shows how one wrong values answer fails the paper | IntersectionObserver plus a timer; can be replayed by flipping tiles |
+| Hero | "Why 19 out of 20 can still fail": two example tests side by side. The squares are marked, each pass rule is checked off, then the results and a one-line takeaway appear (about 3 seconds). "Play again" replays it. | IntersectionObserver (low threshold, because the card is taller than a phone screen) plus timers; CSS for the marks |
 | Hero and closing call to action | Landscape layers drift at different speeds as you scroll | CSS `animation-timeline: view()`, no JS |
 | How it works | The phone screen changes as each step scrolls past | IntersectionObserver, CSS transitions |
 | Exam | A short slide between questions, a score ring that counts up | CSS keyframes, requestAnimationFrame |

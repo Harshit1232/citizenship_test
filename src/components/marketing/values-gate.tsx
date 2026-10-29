@@ -1,234 +1,288 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useInViewOnce, usePrefersReducedMotion } from "@/lib/hooks";
-import { IconCheck, IconCross } from "@/components/ui/icons";
+import { IconCheck, IconChevronRight, IconCross } from "@/components/ui/icons";
 import { cx } from "@/lib/cx";
 
 /**
- * A practice paper of 20 questions, marked live with the real test's two
- * rules. On first view it fills in answer by answer and lands on 19/20 with
- * one wrong values answer: 95%, and still not a pass. After that, every square
- * is a button the visitor can flip to see how the result changes.
+ * Explains the values rule by comparing two people's tests side by side.
+ * Jordan gets 19 of 20 and does not pass; Alex gets 16 of 20 and passes.
+ * The values questions sit on their own row so the reader never has to
+ * decode a colour, and each pass condition is checked off in plain words.
+ *
+ * The papers are illustrations: a screen reader gets the same story from the
+ * text summary in each card instead.
  */
 
-const TOTAL = 20;
-const VALUES = new Set([2, 6, 10, 14, 17]);
-const STARTING_WRONG = 14; // question 15, a values question
-const PASS_MARK = 0.75;
+type Mark = "right" | "wrong";
 
-type Answer = "right" | "wrong" | null;
-
-function finalPaper(): Answer[] {
-  return Array.from({ length: TOTAL }, (_, i) => (i === STARTING_WRONG ? "wrong" : "right"));
+interface Paper {
+  name: string;
+  general: Mark[]; // 15 general questions
+  values: Mark[]; // 5 values questions
 }
 
-const FINAL = finalPaper();
+const JORDAN: Paper = {
+  name: "Jordan",
+  general: Array(15).fill("right"),
+  values: ["right", "right", "wrong", "right", "right"],
+};
+
+const ALEX: Paper = {
+  name: "Alex",
+  general: ["right", "wrong", "right", "right", "right", "right", "wrong", "right", "right", "right", "wrong", "right", "right", "wrong", "right"],
+  values: Array(5).fill("right"),
+};
+
+function tally(p: Paper) {
+  const general = p.general.filter((m) => m === "right").length;
+  const values = p.values.filter((m) => m === "right").length;
+  const total = general + values;
+  const scoreOk = total >= 15;
+  const valuesOk = values === 5;
+  return { general, values, total, scoreOk, valuesOk, passed: scoreOk && valuesOk };
+}
+
+/** Steps of the reveal: 0 blank, 1 papers marked, 2 rule one, 3 rule two, 4 results, 5 takeaway. */
+const STEP_AT = [0, 1150, 1650, 2150, 2700];
+const LAST = 5;
 
 export function ValuesGate() {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInViewOnce(ref, 0.4);
+  // Low threshold: on phones the card is taller than the screen, so a high one might never be reached.
+  const inView = useInViewOnce(ref, 0.15);
   const reduce = usePrefersReducedMotion();
-  const [answers, setAnswers] = useState<Answer[]>(() => Array(TOTAL).fill(null));
-  const [phase, setPhase] = useState<"idle" | "done">("idle");
-  const [announce, setAnnounce] = useState("");
+  const [step, setStep] = useState(0);
+  const [run, setRun] = useState(0);
 
-  const started = useRef(false);
   useEffect(() => {
-    if (!inView || started.current) return;
-    started.current = true;
-    // With reduced motion the finished paper is shown straight away (see `view` below).
-    if (reduce) return;
-    const target = finalPaper();
-    let i = 0;
-    let doneTimer = 0;
-    const id = window.setInterval(() => {
-      const n = i;
-      setAnswers((prev) => {
-        const next = prev.slice();
-        next[n] = target[n];
-        return next;
-      });
-      i++;
-      if (i >= TOTAL) {
-        window.clearInterval(id);
-        doneTimer = window.setTimeout(() => setPhase("done"), 260);
-      }
-    }, 85);
-    return () => {
-      window.clearInterval(id);
-      window.clearTimeout(doneTimer);
-      // Strict mode and fast remounts: let the next mount start again.
-      started.current = false;
-    };
-  }, [inView, reduce]);
+    if (!inView || reduce) return;
+    const timers = STEP_AT.map((ms, i) => window.setTimeout(() => setStep(i + 1), ms));
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [inView, reduce, run]);
 
-  // Reduced motion: skip the marking sequence and show the finished paper.
-  const showFinal = reduce && phase === "idle";
-  const shownAnswers = showFinal ? FINAL : answers;
-  const answered = shownAnswers.filter(Boolean).length;
-  const correct = shownAnswers.filter((a) => a === "right").length;
-  const valuesRight = [...VALUES].filter((i) => shownAnswers[i] === "right").length;
-  const pct = Math.round((correct / TOTAL) * 100);
-  const scoreMet = correct >= TOTAL * PASS_MARK;
-  const valuesMet = valuesRight === VALUES.size;
-  const passed = scoreMet && valuesMet;
-  const done = phase === "done" || showFinal;
+  // Reduced motion: everything is shown at once.
+  const shown = reduce ? LAST : step;
 
-  function flip(i: number) {
-    if (!done) return;
-    const next = shownAnswers.slice();
-    next[i] = shownAnswers[i] === "right" ? "wrong" : "right";
-    const c = next.filter((a) => a === "right").length;
-    const v = [...VALUES].filter((k) => next[k] === "right").length;
-    const ok = c >= TOTAL * PASS_MARK && v === VALUES.size;
-    setAnswers(next);
-    setPhase("done");
-    setAnnounce(
-      `Question ${i + 1} marked ${next[i] === "right" ? "right" : "wrong"}. ${c} of 20 correct, ${v} of 5 values questions correct. ${ok ? "Pass." : "Not a pass."}`,
-    );
+  function replay() {
+    setStep(0);
+    setRun((r) => r + 1);
   }
 
   return (
-    <div
-      ref={ref}
-      className="rounded-lg border border-line bg-surface/90 p-4 shadow-2 backdrop-blur-sm sm:p-6 lg:p-8"
-    >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 className="font-display text-title font-bold tracking-[-0.01em]">
-          How the real test marks a paper
-        </h2>
-        <p className="flex items-center gap-2 text-small text-muted">
-          <span className="inline-block size-3.5 rounded-[4px] border-2 border-wattle-edge bg-wattle" aria-hidden="true" />
-          Australian values question
-        </p>
+    <div ref={ref} className="rounded-lg border border-line bg-surface/90 p-5 shadow-2 backdrop-blur-sm sm:p-7 lg:p-9">
+      <div className="grid gap-x-10 gap-y-5 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div>
+          <h2 className="font-display text-heading font-bold tracking-[-0.02em] text-ink">Why 19 out of 20 can still fail</h2>
+          <p className="mt-2 max-w-[60ch] text-copy">
+            Every test has 20 questions, and 5 of them are about Australian values. To pass, you need{" "}
+            <strong className="text-ink">both</strong> of these:
+          </p>
+        </div>
+        <ol className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+          <Rule n={1}>At least 15 of the 20 right</Rule>
+          <Rule n={2} values>
+            All 5 values questions right
+          </Rule>
+        </ol>
       </div>
 
-      <ol
-        className="mt-5 grid grid-cols-10 gap-1.5 sm:gap-2 lg:grid-cols-20"
-        aria-label="Practice paper, 20 questions"
-      >
-        {shownAnswers.map((a, i) => {
-          const isValues = VALUES.has(i);
-          return (
-            <li key={i}>
-              <button
-                type="button"
-                onClick={() => flip(i)}
-                disabled={!done}
-                aria-label={`Question ${i + 1}${isValues ? ", values question" : ""}: ${
-                  a === null ? "not marked yet" : a === "right" ? "right" : "wrong"
-                }. ${done ? "Press to change." : ""}`}
-                className={cx(
-                  "group relative grid aspect-square w-full place-items-center rounded-sm border-2 text-caption font-bold tabular-nums",
-                  "transition-[background-color,border-color,transform,color] duration-200 ease-out disabled:cursor-default",
-                  done && "hover:-translate-y-0.5 active:translate-y-0",
-                  a === null && "border-dashed border-line bg-sunk text-muted",
-                  a === "right" && !isValues && "border-line-strong/50 bg-surface text-euc",
-                  a === "right" && isValues && "border-wattle-edge bg-wattle-tint text-wattle-text",
-                  a === "wrong" && "border-fail bg-fail-tint text-fail",
-                )}
-              >
-                <span className="absolute left-1 top-0.5 hidden text-[10px] font-bold leading-none sm:block">
-                  {i + 1}
-                </span>
-                {a === "right" && <IconCheck size={18} className="anim-fade" strokeWidth={2.4} />}
-                {a === "wrong" && <IconCross size={18} className="anim-fade" strokeWidth={2.4} />}
-                {a === null && <span className="sm:hidden">{i + 1}</span>}
-                {isValues && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -bottom-1 left-1/2 h-1 w-1/2 -translate-x-1/2 rounded-full bg-wattle"
-                  />
-                )}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+      <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <PaperCard paper={JORDAN} step={shown} run={run} />
+        <PaperCard paper={ALEX} step={shown} run={run} />
+      </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-stretch">
-        <Readout
-          label="Overall score"
-          value={answered ? `${correct} of 20 correct (${pct}%)` : "Marking…"}
-          rule="Needs 75% or more"
-          state={!answered ? "pending" : scoreMet ? "met" : "unmet"}
-        />
-        <Readout
-          label="Values questions"
-          value={answered ? `${valuesRight} of 5 correct` : "Marking…"}
-          rule="Needs all 5"
-          state={!done ? "pending" : valuesMet ? "met" : "unmet"}
-        />
-        <div
-          className={cx(
-            "flex min-w-[11rem] flex-col justify-center rounded-md px-5 py-4 transition-colors duration-300",
-            !done && "bg-sunk text-muted",
-            done && passed && "bg-pass text-on-euc",
-            done && !passed && "bg-fail text-white dark:text-paper",
+      <div
+        className={cx(
+          "mt-6 flex flex-col gap-4 rounded-md border-l-4 border-wattle bg-wattle-tint px-5 py-4 transition-opacity duration-500 sm:flex-row sm:items-center sm:justify-between",
+          shown >= LAST ? "opacity-100" : "opacity-0",
+        )}
+      >
+        <p className="max-w-[64ch] text-body text-ink">
+          <strong>Jordan got 3 more questions right than Alex, but doesn&apos;t pass.</strong> One wrong values answer is
+          enough to fail the test, however well you do on the rest.
+        </p>
+        <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2">
+          <Link
+            href="/practice/values-check/"
+            tabIndex={shown >= LAST ? undefined : -1}
+            className="font-bold text-wattle-text underline-offset-4 hover:underline"
+          >
+            Practise the values questions
+            <IconChevronRight size={18} className="ml-0.5 inline-block align-[-4px]" />
+          </Link>
+          {!reduce && (
+            <button
+              type="button"
+              onClick={replay}
+              tabIndex={shown >= LAST ? undefined : -1}
+              className="text-small font-bold text-copy underline underline-offset-4 hover:text-ink"
+            >
+              Play again
+            </button>
           )}
-        >
-          <span className="text-caption font-bold opacity-85">Result</span>
-          <span className="font-display text-heading font-extrabold leading-tight tracking-[-0.02em]">
-            {!done ? "…" : passed ? "Pass" : "Not a pass"}
-          </span>
         </div>
       </div>
-
-      <p className="mt-5 max-w-[62ch] text-small text-copy">
-        {done && !passed && scoreMet && !valuesMet ? (
-          <>One wrong values answer fails the test, whatever your total. </>
-        ) : null}
-        {done && passed ? <>Both rules met. </> : null}
-        {done && !scoreMet ? <>Below 75% fails the test on its own. </> : null}
-        <span className="text-muted">
-          {done ? "Tap any square to change its answer." : "Marking a sample paper…"}
-        </span>
-      </p>
-      <p className="sr-only" aria-live="polite">
-        {announce || (done ? "19 of 20 correct, 95%. 4 of 5 values questions correct. Not a pass." : "")}
+      <p className="mt-3 text-caption text-muted">
+        These two tests are examples. The values questions are shown on their own row here to make the rule easy to see.
       </p>
     </div>
   );
 }
 
-function Readout({
-  label,
-  value,
-  rule,
-  state,
-}: {
-  label: string;
-  value: string;
-  rule: string;
-  state: "pending" | "met" | "unmet";
-}) {
+function Rule({ n, values, children }: { n: number; values?: boolean; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3 rounded-md border border-line bg-paper/60 px-4 py-3.5">
+    <li
+      className={cx(
+        "flex items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 text-small font-bold text-ink",
+        values ? "border-wattle-edge/60 bg-wattle-tint" : "border-line-strong bg-surface",
+      )}
+    >
       <span
         aria-hidden="true"
         className={cx(
-          "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full transition-colors duration-300",
-          state === "pending" && "bg-sunk text-muted",
-          state === "met" && "bg-pass-tint text-pass",
-          state === "unmet" && "bg-fail-tint text-fail",
+          "grid size-7 shrink-0 place-items-center rounded-full text-caption font-bold",
+          values ? "bg-wattle text-on-wattle" : "bg-ink text-paper",
         )}
       >
-        {state === "met" && <IconCheck size={16} strokeWidth={2.6} />}
-        {state === "unmet" && <IconCross size={16} strokeWidth={2.6} />}
+        {n}
       </span>
-      <div className="min-w-0">
-        <p className="text-caption font-bold text-muted">{label}</p>
-        <p className="text-body font-bold text-ink tabular-nums">{value}</p>
-        <p className="text-caption text-muted">
-          {rule}.
-          {state !== "pending" && (
-            <span className={cx("font-bold", state === "met" ? "text-pass" : "text-fail")}>
-              {state === "met" ? " Met." : " Not met."}
-            </span>
+      {children}
+    </li>
+  );
+}
+
+function PaperCard({ paper, step, run }: { paper: Paper; step: number; run: number }) {
+  const t = tally(paper);
+  const marked = step >= 1;
+  const summary =
+    `${paper.name} got ${t.total} of 20 right. ` +
+    `${t.scoreOk ? "That is at least 15" : "That is under 15"}. ` +
+    `${paper.name} got ${t.values} of 5 values questions right. ` +
+    `${t.passed ? `${paper.name} passes.` : `${paper.name} does not pass.`}`;
+
+  return (
+    <article className="flex flex-col rounded-md border border-line bg-paper/70 p-4 sm:p-5">
+      <p className="sr-only">{summary}</p>
+      <div aria-hidden="true" className="flex flex-1 flex-col">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+          <h3 className="font-display text-title font-bold text-ink">{paper.name}&apos;s test</h3>
+          <p
+            className={cx(
+              "font-display text-lead font-bold tabular-nums text-ink transition-opacity duration-300 sm:text-title",
+              marked ? "opacity-100" : "opacity-0",
+            )}
+          >
+            {t.total} of 20 right
+          </p>
+        </div>
+
+        <Row label="15 general questions" marks={paper.general} count={t.general} marked={marked} run={run} offset={0} />
+        <Row label="5 values questions" marks={paper.values} count={t.values} marked={marked} run={run} offset={15} values />
+
+        <ul className="mt-5 space-y-2 border-t border-line pt-4">
+          <Check shown={step >= 2} ok={t.scoreOk} rule="At least 15 right" detail={`${t.total} right`} />
+          <Check shown={step >= 3} ok={t.valuesOk} rule="All 5 values questions right" detail={`${t.values} of 5`} />
+        </ul>
+
+        <div
+          className={cx(
+            "mt-5 flex items-center gap-3 rounded-md px-4 py-3 transition-[opacity,transform] duration-500 ease-out",
+            t.passed ? "bg-pass text-on-euc" : "bg-fail text-white dark:text-paper",
+            step >= 4 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
           )}
-        </p>
+        >
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/20">
+            {t.passed ? <IconCheck size={18} strokeWidth={2.8} /> : <IconCross size={18} strokeWidth={2.8} />}
+          </span>
+          <span className="font-display text-[1.125rem] font-bold sm:text-title">{t.passed ? `${paper.name} passes` : `${paper.name} doesn't pass`}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Row({
+  label,
+  marks,
+  count,
+  marked,
+  run,
+  offset,
+  values,
+}: {
+  label: string;
+  marks: Mark[];
+  count: number;
+  marked: boolean;
+  run: number;
+  offset: number;
+  values?: boolean;
+}) {
+  return (
+    <div className={cx("mt-4 rounded-md px-3 py-3", values ? "bg-wattle-tint ring-1 ring-wattle-edge/40" : "bg-surface ring-1 ring-line")}>
+      <div className="flex items-baseline justify-between gap-3 text-small">
+        <span className={cx("font-bold", values ? "text-wattle-text" : "text-copy")}>{label}</span>
+        <span className={cx("tabular-nums transition-opacity duration-300", marked ? "opacity-100" : "opacity-0", values && count < marks.length ? "font-bold text-fail" : "text-muted")}>
+          {count} right
+        </span>
+      </div>
+      <div className="mt-2 grid grid-cols-8 gap-1.5 md:grid-cols-15">
+        {marks.map((m, i) => {
+          const wrongValues = values && m === "wrong";
+          return (
+            <span key={`${run}-${i}`} className="relative aspect-square">
+              {marked ? (
+                <span
+                  className={cx(
+                    "anim-pop grid size-full place-items-center rounded-[6px] border-2",
+                    m === "right" && !values && "border-line-strong/60 bg-surface text-euc",
+                    m === "right" && values && "border-wattle-edge bg-surface text-wattle-text",
+                    m === "wrong" && "border-fail bg-fail text-white dark:text-paper",
+                  )}
+                  style={{ "--delay": `${(offset + i) * 45}ms` } as React.CSSProperties}
+                >
+                  {m === "right" ? <IconCheck size={14} strokeWidth={2.8} /> : <IconCross size={14} strokeWidth={2.8} />}
+                </span>
+              ) : (
+                <span className="block size-full rounded-[6px] border-2 border-dashed border-line" />
+              )}
+              {wrongValues && marked && (
+                <span className="motion-pulse pointer-events-none absolute -inset-1 animate-[pulse-soft_1.6s_ease-in-out_infinite] rounded-[9px] border-2 border-fail" />
+              )}
+            </span>
+          );
+        })}
       </div>
     </div>
+  );
+}
+
+function Check({ shown, ok, rule, detail }: { shown: boolean; ok: boolean; rule: string; detail: string }) {
+  return (
+    <li className="flex items-center gap-3">
+      <span
+        className={cx(
+          "grid size-6 shrink-0 place-items-center rounded-full transition-colors duration-300",
+          !shown && "bg-sunk text-transparent",
+          shown && ok && "bg-pass-tint text-euc-deep",
+          shown && !ok && "bg-fail-tint text-fail",
+        )}
+      >
+        {ok ? <IconCheck size={14} strokeWidth={2.8} /> : <IconCross size={14} strokeWidth={2.8} />}
+      </span>
+      <span className="min-w-0 flex-1 text-small text-ink">{rule}</span>
+      <span
+        className={cx(
+          "text-small font-bold tabular-nums transition-opacity duration-300",
+          shown ? "opacity-100" : "opacity-0",
+          ok ? "text-euc-deep dark:text-euc" : "text-fail",
+        )}
+      >
+        {shown ? (ok ? `Yes, ${detail}` : `No, ${detail}`) : detail}
+      </span>
+    </li>
   );
 }
