@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconBook } from "@/components/ui/icons";
 import { officialLinks } from "@/lib/site";
 import { cx } from "@/lib/cx";
@@ -6,10 +7,13 @@ import { cx } from "@/lib/cx";
 export function Explanation({
   text,
   source,
+  qid,
   className,
 }: {
   text: string;
   source: string;
+  /** The question's id in the bank, shown so people can report mistakes. */
+  qid?: number;
   className?: string;
 }) {
   const page = source.replace(/^p\.?\s*/i, "");
@@ -29,6 +33,14 @@ export function Explanation({
         Our Common Bond, page {page}
         <span className="sr-only"> (opens the official booklet in a new tab)</span>
       </a>
+      {qid !== undefined && (
+        <p className="mt-2 flex flex-wrap items-center gap-x-3 text-caption text-muted">
+          <span>Ref {qid}</span>
+          <Link href="/corrections/" className="font-bold underline underline-offset-2 hover:text-ink">
+            Report a mistake
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function SiteFooter() {
     <footer className="bg-band text-band-body">
       <div className="mx-auto max-w-[1200px] px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
+          <div className="md:col-span-3">
             <p className="flex items-center gap-2.5 font-display text-title font-bold text-band-ink">
               <WattleMark size={30} />
               {site.name}
@@ -39,9 +39,17 @@ export function SiteFooter() {
             </p>
           </div>
           <FooterCol title="Practise">
+            <FooterLink href="/practice/">Your practice</FooterLink>
             <FooterLink href="/practice/test/">Practice test</FooterLink>
             <FooterLink href="/practice/values-check/">Values check</FooterLink>
-            <FooterLink href="/#pricing">Pricing</FooterLink>
+            <FooterLink href="/practice/study/">Study</FooterLink>
+            <FooterLink href="/pricing/">Pricing</FooterLink>
+          </FooterCol>
+          <FooterCol title={site.name}>
+            <FooterLink href="/about/">About</FooterLink>
+            <FooterLink href="/corrections/">Corrections</FooterLink>
+            <FooterLink href="/privacy/">Privacy</FooterLink>
+            <FooterLink href="/terms/">Terms of use</FooterLink>
           </FooterCol>
           <FooterCol title="Official sources">
             <FooterLink href={officialLinks.ourCommonBond} external>

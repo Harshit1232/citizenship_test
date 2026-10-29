@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function DesignPage() {
   return (
     <>
-      <PracticeHeader title="Design system" />
+      <PracticeHeader title="Design system" nav={false} />
       <DesignShowcase />
     </>
   );

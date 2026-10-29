@@ -1,17 +1,18 @@
 import { ButtonLink, Button } from "@/components/ui/button";
 import { IconCheck } from "@/components/ui/icons";
 import { site } from "@/lib/site";
+import { BANK_FACTS } from "@/lib/marketing-data";
 
 const FREE = [
   "Full practice tests, timed and marked like the real one",
   "The 10-question values check",
+  `Study all ${BANK_FACTS.totalQuestions} questions, or test yourself on chosen topics`,
   "The reason and booklet page for every question you miss",
   "Progress saved on this device",
 ];
 
 const FULL = [
   "Values mastery track, built around the five values areas",
-  "Practice by booklet part, aimed at your weak spots",
   "A readiness check before you book your test",
   "Your progress on all your devices",
 ];

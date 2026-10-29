@@ -118,7 +118,7 @@ export function ValuesCheck() {
                       {qq.answer}
                     </span>
                   </p>
-                  <Explanation className="mt-4" text={qq.explanation} source={qq.source} />
+                  <Explanation className="mt-4" text={qq.explanation} source={qq.source} qid={qq.id} />
                 </li>
               ))}
             </ol>
@@ -191,7 +191,7 @@ export function ValuesCheck() {
                   The answer is: <strong>{q.answer}</strong>
                 </p>
               )}
-              <Explanation className="mt-4" text={q.explanation} source={q.source} />
+              <Explanation className="mt-4" text={q.explanation} source={q.source} qid={q.id} />
               <Button size="lg" className="mt-6" onClick={nextQuestion}>
                 {idx < questions.length - 1 ? "Next question" : "See your score"}
               </Button>

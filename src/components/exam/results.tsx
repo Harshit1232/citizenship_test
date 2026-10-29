@@ -162,7 +162,7 @@ export function Results({ paper, picks, result, timedOut, seconds, onAgain }: Re
                       </span>
                     </p>
                   </div>
-                  <Explanation className="mt-4" text={q.explanation} source={q.source} />
+                  <Explanation className="mt-4" text={q.explanation} source={q.source} qid={q.id} />
                 </li>
               );
             })}
@@ -195,13 +195,13 @@ export function Results({ paper, picks, result, timedOut, seconds, onAgain }: Re
               </ButtonLink>
             </>
           )}
-          <ButtonLink href="/" variant="quiet">
-            Home
+          <ButtonLink href="/practice/progress/" variant="quiet">
+            See your progress
           </ButtonLink>
         </div>
         <p className="mt-6 border-t border-line pt-5 text-small text-muted">
-          Coming in the full version: a values mastery track, practice by booklet part, and a
-          readiness check before you book.{" "}
+          Coming in the full version: a values mastery track, a readiness check before you book,
+          and your progress on all your devices.{" "}
           <Link href="/#pricing" className="font-bold text-euc-deep underline underline-offset-2">
             See what&apos;s planned
           </Link>

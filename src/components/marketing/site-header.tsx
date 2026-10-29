@@ -12,6 +12,7 @@ const links = [
   { href: "/#values", label: "The values rule" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#faq", label: "Questions" },
+  { href: "/practice/", label: "Your practice" },
 ];
 
 export function SiteHeader() {

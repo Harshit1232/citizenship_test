@@ -452,3 +452,122 @@
     transform: none !important;
   }
 }
+
+/* Horizontal scrollers (mobile section nav) without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Charts: bars grow from the baseline, the trend line draws in, points pop. */
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-grow-x {
+  transform-origin: left center;
+  animation: grow-x 760ms var(--motion-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+.anim-draw {
+  stroke-dasharray: 1;
+  animation: draw-line 1100ms var(--motion-in-out) both;
+}
+.anim-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pop-in 380ms var(--motion-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-grow-x,
+  .anim-draw,
+  .anim-pop {
+    animation: none;
+  }
+}
+
+/* Long-form pages (about, privacy, terms, corrections). */
+@layer components {
+  .prose-site {
+    color: var(--body);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    max-width: 68ch;
+  }
+  .prose-site > * + * {
+    margin-top: 1.1em;
+  }
+  .prose-site h2 {
+    margin-top: 2.6em;
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .prose-site h3 {
+    margin-top: 2em;
+    font-size: var(--text-lead);
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .prose-site h2 + *,
+  .prose-site h3 + * {
+    margin-top: 0.7em;
+  }
+  .prose-site a {
+    color: var(--euc-deep);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  [data-theme="dark"] .prose-site a {
+    color: var(--euc);
+  }
+  .prose-site ul,
+  .prose-site ol {
+    padding-left: 1.3em;
+  }
+  .prose-site ul {
+    list-style: disc;
+  }
+  .prose-site ol {
+    list-style: decimal;
+  }
+  .prose-site li + li {
+    margin-top: 0.45em;
+  }
+  .prose-site li::marker {
+    color: var(--muted);
+  }
+  .prose-site strong {
+    color: var(--ink);
+  }
+}

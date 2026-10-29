@@ -13,6 +13,12 @@ export const site = {
   refundDays: 14,
   /** The paid version is not built yet; the button stays disabled until a waitlist handler exists. */
   waitlistEnabled: false,
+  /** Where people report mistakes and contact us. MUST be set before launch (see OPEN_QUESTIONS.md). */
+  contactEmail: null as string | null,
+  /** Privacy and terms pages show a draft notice until a lawyer has reviewed them. */
+  legalReviewed: false,
+  /** Date the privacy and terms text last changed, shown on those pages. */
+  legalUpdated: "29 October 2026",
 } as const;
 
 /** Official sources. Link to these; never paraphrase them as our own claims. */

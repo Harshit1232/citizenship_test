@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { CATEGORY_BY_ID } from "@/lib/bank";
 import { Button } from "@/components/ui/button";
 import { IconBook, IconClock, IconFlag, IconSpeaker } from "@/components/ui/icons";
 import type { PaperPlan } from "@/lib/exam/plan";
@@ -15,6 +17,7 @@ interface StartScreenProps {
 export function StartScreen({ settings, plan, onStart, onUseOfficial }: StartScreenProps) {
   const custom = settings.mode === "custom" || settings.count !== 20 || !settings.timerOn || settings.minutes !== 45 || !settings.forceValues;
   const passCount = Math.ceil(plan.want * 0.75);
+  const topics = settings.cats.map((id) => CATEGORY_BY_ID.get(id)?.label).filter((x): x is string => !!x);
   return (
     <main id="main" className="mx-auto w-full max-w-[880px] px-4 pb-24 pt-10 sm:px-6 sm:pt-16">
       <div className="anim-rise">
@@ -35,12 +38,27 @@ export function StartScreen({ settings, plan, onStart, onUseOfficial }: StartScr
       </dl>
 
       {custom && (
-        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-wattle-edge/50 bg-wattle-tint px-4 py-3 text-small text-ink">
-          <span>This test uses the custom settings you saved earlier.</span>
-          <button type="button" onClick={onUseOfficial} className="font-bold text-euc-deep underline underline-offset-2">
-            Use the real test&apos;s format instead
-          </button>
+        <div className="mt-6 rounded-md border border-wattle-edge/50 bg-wattle-tint px-4 py-3.5 text-small text-ink">
+          <p>
+            <span className="font-bold">This test uses your own settings, not the real test&apos;s format.</span>{" "}
+            {settings.mode === "custom" && topics.length > 0 && (
+              <>Topics: {topics.length <= 4 ? topics.join(", ") : `${topics.slice(0, 3).join(", ")} and ${topics.length - 3} more`}.</>
+            )}
+          </p>
+          <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+            <button type="button" onClick={onUseOfficial} className="font-bold text-euc-deep underline underline-offset-2">
+              Use the real test&apos;s format
+            </button>
+            <Link href="/practice/settings/" className="font-bold text-euc-deep underline underline-offset-2">
+              Change settings
+            </Link>
+          </p>
         </div>
+      )}
+      {plan.want < 1 && (
+        <p className="mt-4 rounded-sm bg-fail-tint px-3 py-2 text-small font-bold text-fail">
+          No questions match your settings. Choose at least one topic in Settings.
+        </p>
       )}
 
       <h2 className="mt-12 font-display text-title font-bold">During the test</h2>

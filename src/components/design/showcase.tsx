@@ -166,7 +166,7 @@ export function DesignShowcase() {
             />
           </div>
         </div>
-        <Explanation className="mt-8 max-w-[60ch]" text={SAMPLE_QUESTION.explanation} source={SAMPLE_QUESTION.source} />
+        <Explanation className="mt-8 max-w-[60ch]" text={SAMPLE_QUESTION.explanation} source={SAMPLE_QUESTION.source} qid={SAMPLE_QUESTION.id} />
       </Section>
 
       <Section title="Exam controls">

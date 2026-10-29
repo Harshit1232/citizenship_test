@@ -144,7 +144,7 @@ export function ExamApp() {
         onFinish={() => finish(view.test, false)}
         onExit={() => {
           saveActive(view.test);
-          router.push("/");
+          router.push("/practice/");
         }}
       />
     );

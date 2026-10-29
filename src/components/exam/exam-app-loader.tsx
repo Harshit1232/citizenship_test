@@ -3,10 +3,10 @@
 import dynamic from "next/dynamic";
 import { PracticeHeader } from "@/components/practice/practice-header";
 
-function Loading({ title }: { title: string }) {
+function Loading() {
   return (
     <>
-      <PracticeHeader title={title} />
+      <PracticeHeader />
       <main id="main" className="mx-auto max-w-[880px] px-4 pt-16 sm:px-6" aria-busy="true">
         <p className="sr-only">Loading</p>
         <div className="h-12 w-64 max-w-full animate-pulse rounded-sm bg-sunk" />
@@ -23,7 +23,7 @@ function Loading({ title }: { title: string }) {
  */
 export const ExamAppLoader = dynamic(() => import("./exam-app").then((m) => m.ExamApp), {
   ssr: false,
-  loading: () => <Loading title="Practice test" />,
+  loading: () => <Loading />,
 });
 
 export const ValuesCheckLoader = dynamic(() => import("./values-check").then((m) => m.ValuesCheck), {
