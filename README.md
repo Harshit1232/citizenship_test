@@ -22,7 +22,7 @@ npm run dev          # http://localhost:3000
 | `npm run serve` | Serves `out/` at http://localhost:4321 with the production security headers |
 | `npm test` | Unit and component tests (Vitest; components in jsdom with Testing Library) |
 | `npm run test:e2e` | End-to-end tests (Playwright, Chromium) against the built site. Run `npm run build` first. |
-| `npm run typecheck` | TypeScript, no emit |
+| `npm run typecheck` | Generates Next's route types (`next typegen`), then TypeScript with no emit |
 | `npm run lint` | ESLint (Next config) |
 | `npm run check` | Everything above, in order, as CI runs it |
 

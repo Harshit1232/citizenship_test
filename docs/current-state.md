@@ -64,7 +64,7 @@
 
 - Accounts, payments and a waitlist
 - A contact address (`site.contactEmail` is empty, so the corrections and privacy pages say contact is being set up)
-- Branch protection and Dependabot (owner actions listed in `docs/security.md`). A CI workflow is in `.github/workflows/ci.yml`; see the note in the verified table about whether it has run.
+- Branch protection and Dependabot (owner actions listed in `docs/security.md`). CI is running; branch protection would make a green CI run required before merging.
 
 ## Verified (30 October 2026)
 
@@ -78,7 +78,7 @@
 | Static build | 20 routes plus a 404 page |
 | Official practice test comparison | Gone through by hand on 30 October 2026: <ul><li>the welcome page</li><li>the question screen and Review later</li><li>the locked Submit and its tooltip</li><li>the warning dialog</li><li>the result page</li></ul>Layout and wording were matched as listed in `DESIGN.md`. |
 | Dependencies | `npm audit`: 0 known vulnerabilities |
-| CI | `.github/workflows/ci.yml` runs lint, typecheck, unit and component tests, the build and the end-to-end tests. Whether it has run on GitHub yet is in the push notes for this checkpoint. |
+| CI | `.github/workflows/ci.yml` runs lint, typecheck, unit and component tests, the build and the end-to-end tests on every push to `main` and every pull request. The first run on GitHub caught a typecheck that only passed locally: generated Next types were missing on a fresh checkout. It was fixed with `next typegen`, and the next run passed every step. |
 
 Not re-checked this round: JavaScript weight (about 154 to 158 KB gz per page at checkpoint 3) and horizontal overflow on pages other than the test screen and home page.
 
