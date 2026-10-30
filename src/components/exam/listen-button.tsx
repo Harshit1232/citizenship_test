@@ -11,7 +11,19 @@ const noop = () => () => {};
  * Some browsers use an online voice service for this (see the privacy page).
  * Hidden where unsupported.
  */
-export function ListenButton({ text, className }: { text: string; className?: string }) {
+export function ListenButton({
+  text,
+  className,
+  label = "Listen",
+  compact,
+}: {
+  text: string;
+  className?: string;
+  /** Visible label when not speaking. */
+  label?: string;
+  /** Smaller, for use beside an explanation. */
+  compact?: boolean;
+}) {
   const supported = useSyncExternalStore(
     noop,
     () => typeof window !== "undefined" && "speechSynthesis" in window,
@@ -54,13 +66,14 @@ export function ListenButton({ text, className }: { text: string; className?: st
       onClick={toggle}
       aria-pressed={speaking}
       className={cx(
-        "inline-flex min-h-11 items-center gap-2 rounded-sm px-3 text-small font-bold transition-colors",
+        "inline-flex items-center rounded-sm font-bold transition-colors",
+        compact ? "min-h-8 gap-1.5 px-2 text-caption" : "min-h-11 gap-2 px-3 text-small",
         speaking ? "bg-euc-tint text-euc-deep" : "text-ink hover:bg-sunk",
         className,
       )}
     >
-      {speaking ? <IconStop size={18} /> : <IconSpeaker size={18} />}
-      <span>{speaking ? "Stop" : "Listen"}</span>
+      {speaking ? <IconStop size={compact ? 15 : 18} /> : <IconSpeaker size={compact ? 15 : 18} />}
+      <span>{speaking ? "Stop" : label}</span>
     </button>
   );
 }

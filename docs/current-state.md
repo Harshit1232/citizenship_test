@@ -1,4 +1,4 @@
-# Current state: checkpoint 3 (30 October 2026)
+# Current state: checkpoint 4 (30 October 2026)
 
 ## Built
 
@@ -19,9 +19,14 @@
     - a resume card for a paused test
     - links to start a test, the values check or study
     - stat tiles, weakest and strongest topics, and the last five tests
-  - `/practice/test/`, the mock test:
-    - timer, question map, review flags, Listen, A/B/C keys, save and resume
-    - results showing both pass conditions
+  - `/practice/test/`, the mock test, laid out like the official practice test (checked 30 October 2026):
+    - 5 questions from each part, in part order, with a part label above each question, so the values questions are the last five
+    - a question list with not answered, answered and Review later marks
+    - plain radio answers, a Review later checkbox, Previous, Next and Submit
+    - Submit locked until every question has an answer, then a "Warning" confirmation
+    - a footer with "N of 20 questions answered" and "Time remaining: hh:mm:ss"
+    - Listen, Larger text and the theme switch; save and resume
+    - a result page worded like the official one (values x/5, overall mark x/20, each part out of 5), then every missed question with its reason
     - a notice when custom settings are in use
   - `/practice/values/`, the values mastery track:
     - 38 scenarios, one for each rule in Part 4 of the booklet, in five areas (see `docs/values-scenarios.md`)
@@ -48,7 +53,7 @@
     - download your data as JSON
     - delete your history
     - saves as you change things
-- **Explanations** now show the question's reference number and a "Report a mistake" link.
+- **Explanations** show the question's reference number, a "Report a mistake" link and a "Listen to why" button. Scenario feedback can be listened to as well.
 - **Security:**
   - headers in `public/_headers`
   - the plan in `docs/security.md`
@@ -59,22 +64,23 @@
 
 - Accounts, payments and a waitlist
 - A contact address (`site.contactEmail` is empty, so the corrections and privacy pages say contact is being set up)
-- CI on GitHub, branch protection and Dependabot (owner actions listed in `docs/security.md`)
+- Branch protection and Dependabot (owner actions listed in `docs/security.md`). A CI workflow is in `.github/workflows/ci.yml`; see the note in the verified table about whether it has run.
 
-## Verified (29 October 2026)
+## Verified (30 October 2026)
 
 | Check | Result |
 |---|---|
-| Unit tests (Vitest) | 75 passing. As well as the earlier tests, they cover the values scenarios (all 54 values questions taught, sentence length, answer balance, no "longest answer" giveaway), values progress, the gate run and the readiness rule. |
+| Unit and component tests (Vitest) | 101 passing across 14 files. **Unit tests** cover the rules and data: paper building (5 per part, in part order, values last), marking, sessions, storage, progress, study, scenario content, the gate and readiness. **Component tests** run in jsdom with Testing Library and drive real screens: a whole test, the Submit lock and warning, resuming after leaving, the larger-text setting, both result outcomes, a scenario (first attempt only), the gate ending on a wrong answer and clearing after 10, and the readiness card. |
+| End-to-end tests (Playwright, Chromium) | 72 passing: 36 tests at desktop (1280 px) and phone (Pixel 7) sizes, against the built site with the production headers. They cover: <ul><li>the full test in the official layout</li><li>No in the warning</li><li>Review later</li><li>a reload mid-test</li><li>the clock running out (simulated with a fake clock)</li><li>keyboard answering</li><li>the result reaching progress</li><li>the values track and its deep links</li><li>the gate</li><li>data written by the original app</li><li>the 404 page</li></ul> |
+| axe-core (WCAG 2.2 AA plus best practice) | 0 violations, run inside the end-to-end tests at both sizes. Covers all 20 pages, plus the test screen, the locked-Submit message, larger text, the warning dialog, the result, and the test screen in dark mode. These tests found two real problems, both fixed: <ul><li>the last-minute timer pulse faded red text below contrast</li><li>every dialog shared one title id</li></ul> |
+| Content-Security-Policy and console | Every page loads under the policy from `public/_headers` with no console errors or CSP violations. The tests check that the header is actually sent. |
 | TypeScript, ESLint | Clean |
-| Static build | 20 routes plus a 404 page, including one page per values area |
-| axe-core (WCAG 2.2 AA plus best practice) | 0 violations on every route, light and dark, 1280 and 360 px wide. The values screens were checked in every state: hint, answered, area finished, gate question, wrong answer, run ended, cleared. Checked with sample data, including revealed flashcards, list view, custom settings, the heatmap detail panel, the delete dialog and every exam state. |
-| Keyboard | Full mock test by keyboard only. Study: Space reveals then moves on; arrows move. Heatmap: one tab stop, arrows move, Enter opens the detail. Chart: arrows read out each test. Settings are reachable and save. |
-| Content-Security-Policy | Every route, including the values pages, loads under the policy in `public/_headers` with 0 violations. A deliberately strict policy does produce violations, so the test works. |
-| Returning user from the old HTML | Checked at checkpoint 1: the old file's data carries over byte-identical. Storage keys are unchanged since then. |
-| Horizontal overflow, console errors | None on any route at 360 or 1280 px, either theme |
-| JavaScript weight | About 154 to 158 KB gz per page in modern browsers, almost all of it the Next/React runtime. The question bank is a 33 KB gz chunk loaded on practice pages only. CSS is about 12 KB gz. |
+| Static build | 20 routes plus a 404 page |
+| Official practice test comparison | Gone through by hand on 30 October 2026: <ul><li>the welcome page</li><li>the question screen and Review later</li><li>the locked Submit and its tooltip</li><li>the warning dialog</li><li>the result page</li></ul>Layout and wording were matched as listed in `DESIGN.md`. |
 | Dependencies | `npm audit`: 0 known vulnerabilities |
+| CI | `.github/workflows/ci.yml` runs lint, typecheck, unit and component tests, the build and the end-to-end tests. Whether it has run on GitHub yet is in the push notes for this checkpoint. |
+
+Not re-checked this round: JavaScript weight (about 154 to 158 KB gz per page at checkpoint 3) and horizontal overflow on pages other than the test screen and home page.
 
 ## Not verified
 

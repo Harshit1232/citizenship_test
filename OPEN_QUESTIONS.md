@@ -17,7 +17,7 @@ Each item has a default already in the code, so nothing is blocked. Each default
 
 6. **Pass mark rounding.** The old app rounded the percentage before comparing it with 75%. The new one compares the exact fraction (`correct × 100 ≥ 75 × n`). For 20 questions the outcome is identical. It only differs for custom lengths. For example, 41 of 55 is 74.5%: the old app rounded that to 75% and passed it, and the new app fails it. *Confirm the exact-fraction rule is what you want.*
 7. **Auto-advance after answering** was removed. Picking an answer no longer jumps to the next question. People taking a timed test should be able to change their mind, and focus jumping away is disorienting for screen-reader users.
-8. **Part label on exam questions** was removed. It showed "Part 4: Australian values", which revealed the values questions even when the values tag was switched off.
+8. **Part label on exam questions is back** (reversing checkpoint 1). It was removed because it revealed the values questions. Then the official practice test turned out to show it too: "Part 4 - Australian values" sits above each of the last five questions. The "Label the values questions" setting is gone, because it no longer changes anything.
 9. **The values check explains the correct answer only**, not why each wrong option is wrong. The bank has one explanation per question. Explaining each wrong answer would be the strongest paid feature, and it needs about 336 × 2 new explanations written and checked.
 
 ## Content and claims
@@ -40,5 +40,18 @@ Each item has a default already in the code, so nothing is blocked. Each default
 
 20. **Values mastery and the readiness check are free for now.** Your guide puts them in the paid unlock. They are labelled "free while in early access" on the site, so charging later stays honest. Decide when they move behind the paywall. Your 90-day plan puts that at the paid beta, weeks 8 to 11.
 21. **Scenario content needs a human review before paid launch.** See `docs/values-scenarios.md`. All 38 were written from the booklet, and their facts and page numbers were spot-checked against the official PDF. A line-by-line check by you, or by someone you trust, is still needed.
-22. **Exam-day simulator (launch feature 4 in your guide) is not built.** It means matching the official practice test's screen, and nobody has looked at that screen yet. Take screenshots of the official practice test (https://citizenshippracticetest.homeaffairs.gov.au/) for me, and I can match the layout and controls.
+22. **Exam-day simulator: built, matched to the official *practice* test, not the real one.** I went through the official practice test (https://citizenshippracticetest.homeaffairs.gov.au/) on 30 October 2026 and matched its layout, labels and rules. That covers the question list and its status marks, the part labels, plain radio answers, Review later, Previous/Next/Submit, the Submit lock, the "Warning" confirmation, the footer and the result page wording. Its government branding was not copied. Three risks remain:
+    - The test at a test centre may not look like the practice test. Home Affairs presents the practice test as a way to get familiar with the real one, but I have not seen the real test. Keep the site's wording to "laid out like the official practice test", never "identical to the real test".
+    - **5 questions from each part** comes from one practice attempt plus its result page, which scores each part out of 5. If the real test mixes parts differently, `buildOfficial` in `src/lib/exam/plan.ts` is the one place to change.
+    - **Running out of time submits the paper as it stands.** I did not wait 45 minutes to see what the official practice test does.
+
+    These differences from the official practice test are deliberate:
+    - Save and exit, so a test can be finished later.
+    - A larger-text button and a light/dark switch, in place of its text-size and contrast tools.
+    - After the official-style result, every missed question with the reason. The official practice test shows marks only.
+
+## Added with the exam-day simulator
+
+23. **Q314 page reference: checked, not changed.** The bank cites page 38 for "What do Australian citizens pledge…?" and the open issue said it should be page 4. The official PDF has both. Page 4 prints the full pledge. Page 38, inside the tested Part 4, says citizens "pledge their loyalty to Australia and its people", which is the answer. So page 38 is right for the question, and no correction was logged. The pledge scenario keeps page 4, because its "What it means" box quotes the wider pledge.
+24. **"FAIL" in capitals on the result page** matches the official practice test. Elsewhere the site still says "Not a pass". Say if you want one wording everywhere.
 

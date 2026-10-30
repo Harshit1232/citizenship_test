@@ -22,6 +22,13 @@ interface AnswerOptionsProps {
   disabled?: boolean;
   /** Compact sizing for previews. */
   compact?: boolean;
+  /**
+   * Radio circles instead of letters, as on the official test. Used for
+   * test questions; practice screens keep the letters.
+   */
+  plain?: boolean;
+  /** Larger text, from the test's Larger text button. */
+  large?: boolean;
 }
 
 /**
@@ -38,6 +45,8 @@ export function AnswerOptions({
   reveal,
   disabled,
   compact,
+  plain,
+  large,
 }: AnswerOptionsProps) {
   return (
     <div role="radiogroup" aria-labelledby={legendId} className={cx("flex flex-col", compact ? "gap-2" : "gap-3")}>
@@ -54,7 +63,7 @@ export function AnswerOptions({
             className={cx(
               "group relative flex items-start gap-4 rounded-md border-2 bg-surface text-left",
               "transition-[border-color,background-color,box-shadow,opacity] duration-150 ease-out",
-              compact ? "px-3.5 py-3 text-small" : "px-4 py-4 text-lead sm:px-5",
+              compact ? "px-3.5 py-3 text-small" : large ? "px-4 py-5 text-[1.3125rem] sm:px-5" : "px-4 py-4 text-lead sm:px-5",
               !reveal && !disabled && "cursor-pointer hover:border-ink",
               !reveal && (checked ? "border-euc bg-euc-tint shadow-1" : "border-line-strong"),
               reveal && isAnswer && "border-pass bg-pass-tint",
@@ -73,28 +82,47 @@ export function AnswerOptions({
               onChange={() => onChange?.(i)}
               className="peer sr-only"
             />
-            <span
-              aria-hidden="true"
-              className={cx(
-                "grid shrink-0 place-items-center rounded-sm border-2 font-display font-bold",
-                compact ? "size-7 text-caption" : "size-9 text-small",
-                "transition-colors duration-150",
-                !reveal && (checked ? "border-euc bg-euc text-on-euc" : "border-line-strong text-muted"),
-                reveal && isAnswer && "border-pass bg-pass text-on-euc",
-                reveal && isWrongPick && "border-fail bg-fail text-white dark:text-paper",
-                reveal && dim && "border-line text-muted",
-              )}
-            >
-              {reveal && isAnswer ? (
-                <IconCheck size={compact ? 15 : 18} strokeWidth={2.6} />
-              ) : reveal && isWrongPick ? (
-                <IconCross size={compact ? 15 : 18} strokeWidth={2.6} />
-              ) : (
-                LETTERS[i]
-              )}
-            </span>
+            {plain && !reveal ? (
+              <span
+                aria-hidden="true"
+                className={cx(
+                  "mt-0.5 grid shrink-0 place-items-center rounded-full border-2 transition-colors duration-150",
+                  compact ? "size-5" : "size-6",
+                  checked ? "border-euc" : "border-line-strong",
+                )}
+              >
+                <span
+                  className={cx(
+                    "rounded-full bg-euc transition-transform duration-150",
+                    compact ? "size-2.5" : "size-3",
+                    checked ? "scale-100" : "scale-0",
+                  )}
+                />
+              </span>
+            ) : (
+              <span
+                aria-hidden="true"
+                className={cx(
+                  "grid shrink-0 place-items-center rounded-sm border-2 font-display font-bold",
+                  compact ? "size-7 text-caption" : "size-9 text-small",
+                  "transition-colors duration-150",
+                  !reveal && (checked ? "border-euc bg-euc text-on-euc" : "border-line-strong text-muted"),
+                  reveal && isAnswer && "border-pass bg-pass text-on-euc",
+                  reveal && isWrongPick && "border-fail bg-fail text-white dark:text-paper",
+                  reveal && dim && "border-line text-muted",
+                )}
+              >
+                {reveal && isAnswer ? (
+                  <IconCheck size={compact ? 15 : 18} strokeWidth={2.6} />
+                ) : reveal && isWrongPick ? (
+                  <IconCross size={compact ? 15 : 18} strokeWidth={2.6} />
+                ) : (
+                  LETTERS[i]
+                )}
+              </span>
+            )}
             <span className={cx("min-w-0 pt-0.5", dim ? "text-copy" : "text-ink", compact ? "leading-snug" : "leading-normal")}>
-              <span className="sr-only">{LETTERS[i]}. </span>
+              {!plain && <span className="sr-only">{LETTERS[i]}. </span>}
               {opt}
               {reveal && isAnswer && <span className="sr-only"> (correct answer)</span>}
               {reveal && isWrongPick && <span className="sr-only"> (your answer, wrong)</span>}

@@ -34,7 +34,6 @@ function running(): RunningTest {
     startedAt: 1_000,
     deadline: 1_000 + 45 * 60_000,
     mode: "official",
-    showValuesTag: false,
   };
 }
 

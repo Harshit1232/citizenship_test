@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { IconBook } from "@/components/ui/icons";
+import { ListenButton } from "./listen-button";
 import { officialLinks } from "@/lib/site";
 import { cx } from "@/lib/cx";
 
@@ -9,12 +10,15 @@ export function Explanation({
   source,
   qid,
   className,
+  listen = true,
 }: {
   text: string;
   source: string;
   /** The question's id in the bank, shown so people can report mistakes. */
   qid?: number;
   className?: string;
+  /** Show a Listen button that reads the explanation aloud. */
+  listen?: boolean;
 }) {
   const page = source.replace(/^p\.?\s*/i, "");
   return (
@@ -23,16 +27,19 @@ export function Explanation({
         <span className="font-bold">Why: </span>
         {text}
       </p>
-      <a
-        href={officialLinks.ourCommonBondPdf}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-2.5 inline-flex min-h-8 items-center gap-1.5 rounded-sm border border-line-strong/60 bg-surface px-2.5 text-caption font-bold text-euc-deep hover:border-euc"
-      >
-        <IconBook size={15} />
-        Our Common Bond, page {page}
-        <span className="sr-only"> (opens the official booklet in a new tab)</span>
-      </a>
+      <div className="mt-2.5 flex flex-wrap items-center gap-2">
+        <a
+          href={officialLinks.ourCommonBondPdf}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm border border-line-strong/60 bg-surface px-2.5 text-caption font-bold text-euc-deep hover:border-euc"
+        >
+          <IconBook size={15} />
+          Our Common Bond, page {page}
+          <span className="sr-only"> (opens the official booklet in a new tab)</span>
+        </a>
+        {listen && <ListenButton text={`Why: ${text}`} label="Listen to why" compact />}
+      </div>
       {qid !== undefined && (
         <p className="mt-2 flex flex-wrap items-center gap-x-3 text-caption text-muted">
           <span>Ref {qid}</span>

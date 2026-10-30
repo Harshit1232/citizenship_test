@@ -4,18 +4,19 @@ import { useEffect, useId, useRef, useState } from "react";
 import { WattleMark } from "@/components/brand/wattle-mark";
 import { AnswerOptions } from "@/components/exam/answer-options";
 import { Explanation } from "@/components/exam/explanation";
-import { IconCheck, IconClock, IconCross, IconFlag, IconSpeaker } from "@/components/ui/icons";
+import { EXAM_PART_LABEL } from "@/components/exam/part-style";
+import { IconCheck, IconCross, IconSpeaker } from "@/components/ui/icons";
 import { SAMPLE_QUESTION } from "@/lib/marketing-data";
 import { cx } from "@/lib/cx";
 
 const STEPS = [
   {
-    title: "Sit a test that works like the real one",
-    body: "20 questions in 45 minutes, five of them about Australian values. Mark questions to review later, and use Listen to hear any question read aloud.",
+    title: "Sit a test laid out like the official one",
+    body: "20 questions in 45 minutes, five from each part of the booklet, with the values questions last, as on the official practice test. Mark questions to review later, and use Listen to hear any question read aloud.",
   },
   {
     title: "See your result the way the test marks it",
-    body: "Your overall score and the values rule are shown separately, so you know exactly why a result is a pass or not.",
+    body: "Your values questions and your overall mark are shown separately, as the official practice test shows them, so you know exactly why a result is a pass or a fail.",
   },
   {
     title: "Learn why, from the booklet",
@@ -157,12 +158,6 @@ function MiniHeader({ label }: { label: string }) {
       <div className="flex h-12 items-center gap-2 px-3.5">
         <WattleMark size={22} />
         <span className="text-caption font-bold text-ink">{label}</span>
-        <span className="ml-auto flex items-center gap-1.5 font-display text-small font-bold tabular-nums text-ink">
-          <IconClock size={15} className="text-muted" /> 38:12
-        </span>
-      </div>
-      <div className="h-1 bg-sunk">
-        <div className="h-full w-[35%] bg-euc" />
       </div>
     </div>
   );
@@ -174,30 +169,44 @@ function Screen({ step }: { step: number }) {
   if (step === 0) {
     return (
       <div className="flex h-full flex-col">
-        <MiniHeader label="Question 7 of 20" />
-        <div className="px-4 pt-5">
-          <p className="text-caption font-bold text-muted">Question 7</p>
-          <p id={qid} className="mt-2.5 font-text text-lead font-bold leading-snug text-ink">
+        <MiniHeader label="Question 17 of 20" />
+        <div className="px-4 pt-4">
+          <p className="border-b border-line pb-2 text-caption font-bold text-copy">{EXAM_PART_LABEL.part4}</p>
+          <p id={qid} className="mt-3 font-text text-body font-bold leading-snug text-ink">
             {SAMPLE_QUESTION.question}
           </p>
           <div className="mt-4">
-            <AnswerOptions name={qid} legendId={qid} options={SAMPLE_QUESTION.options} value={2} compact />
+            <AnswerOptions name={qid} legendId={qid} options={SAMPLE_QUESTION.options} value={2} compact plain />
           </div>
-          <div className="mt-3 flex gap-1.5 text-caption font-bold text-ink">
-            <span className="inline-flex items-center gap-1.5 rounded-sm px-2 py-2">
+          <div className="mt-3 flex items-center gap-3 text-caption font-bold text-ink">
+            <span className="inline-flex items-center gap-2 py-1.5">
+              <span className="grid size-4 place-items-center rounded-[3px] bg-euc text-on-euc">
+                <IconCheck size={11} strokeWidth={3} />
+              </span>
+              Review later
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1.5">
               <IconSpeaker size={15} /> Listen
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-sm bg-wattle-tint px-2 py-2 text-wattle-text">
-              <IconFlag size={15} /> Marked to review
+          </div>
+          <div className="mt-3 flex gap-1.5">
+            <span className="grid h-9 flex-1 place-items-center rounded-sm border border-line-strong/60 bg-surface text-caption font-bold text-ink">
+              Previous
+            </span>
+            <span className="grid h-9 flex-1 place-items-center rounded-sm border border-line-strong/60 bg-surface text-caption font-bold text-ink">
+              Next
+            </span>
+            <span className="grid h-9 flex-1 place-items-center rounded-sm bg-euc text-caption font-bold text-on-euc opacity-60">
+              Submit
             </span>
           </div>
         </div>
-        <div className="mt-auto flex gap-2 border-t border-line bg-veil px-4 py-3">
-          <span className="grid h-10 flex-1 place-items-center rounded-sm border border-line-strong/60 bg-surface text-caption font-bold text-ink">
-            Previous
+        <div className="mt-auto flex items-center justify-between gap-2 border-t border-line bg-veil px-4 py-3 text-caption text-copy">
+          <span>
+            <b className="tabular-nums text-ink">16 of 20</b> answered
           </span>
-          <span className="grid h-10 flex-1 place-items-center rounded-sm bg-euc text-caption font-bold text-on-euc">
-            Next
+          <span>
+            Time remaining: <b className="tabular-nums text-ink">00:31:12</b>
           </span>
         </div>
       </div>
@@ -208,16 +217,16 @@ function Screen({ step }: { step: number }) {
       <div className="flex h-full flex-col">
         <MiniHeader label="Your result" />
         <div className="px-4 pt-6">
-          <p className="text-caption font-bold text-muted">Practice test result</p>
-          <p className="mt-1 font-display text-heading font-extrabold tracking-[-0.03em] text-fail">Not a pass</p>
-          <p className="mt-1 text-body font-bold tabular-nums text-ink">19 of 20 correct (95%)</p>
+          <p className="text-caption font-bold text-muted">Practice test</p>
+          <p className="mt-1 font-display text-heading font-extrabold tracking-[-0.02em] text-ink">
+            Test result: <span className="text-fail">FAIL</span>
+          </p>
           <div className="mt-5 space-y-2.5">
-            <MiniGate title="Overall score" value="95%" rule="Needs at least 75%." met />
-            <MiniGate title="Values questions" value="4 of 5" rule="All must be correct." met={false} />
+            <MiniGate title="Correct Australian values questions" value="4/5 (80%)" rule="Must be 5/5 (100%)." met={false} />
+            <MiniGate title="Overall mark" value="19/20 (95%)" rule="Must be at least 15/20 (75%)." met />
           </div>
-          <p className="mt-5 text-small text-ink">
-            Your score was high enough, but a values question was wrong. On the real test, that
-            alone means you do not pass.
+          <p className="mt-5 text-small font-bold text-ink">
+            The overall mark was high enough, but one values question was wrong. That alone is a fail.
           </p>
         </div>
       </div>
@@ -228,7 +237,7 @@ function Screen({ step }: { step: number }) {
       <MiniHeader label="Questions to review" />
       <div className="px-4 pt-5">
         <p className="text-caption font-bold text-muted">
-          Question 15 <span className="ml-1 rounded-sm bg-wattle-tint px-1.5 py-0.5 text-wattle-text">Values question</span>
+          Question 17 <span className="font-normal">· {EXAM_PART_LABEL.part4}</span>
         </p>
         <p className="mt-2 font-text text-body font-bold leading-snug text-ink">{SAMPLE_QUESTION.question}</p>
         <p className="mt-3 flex items-start gap-2 rounded-sm bg-fail-tint px-2.5 py-2 text-small text-fail">
@@ -243,7 +252,7 @@ function Screen({ step }: { step: number }) {
             <b>Correct:</b> {SAMPLE_QUESTION.options[2]}
           </span>
         </p>
-        <Explanation className="mt-3 [&_p]:text-small" text={SAMPLE_QUESTION.explanation} source={SAMPLE_QUESTION.source} />
+        <Explanation className="mt-3 [&_p]:text-small" text={SAMPLE_QUESTION.explanation} source={SAMPLE_QUESTION.source} listen={false} />
       </div>
     </div>
   );

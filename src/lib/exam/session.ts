@@ -15,7 +15,6 @@ export interface RunningTest {
   /** Epoch ms; 0 when untimed. */
   deadline: number;
   mode: Settings["mode"];
-  showValuesTag: boolean;
 }
 
 export function toActiveSession(t: RunningTest, now: number): ActiveSession {
@@ -30,7 +29,9 @@ export function toActiveSession(t: RunningTest, now: number): ActiveSession {
     endsAt: t.deadline || 0,
     timed: !!t.deadline,
     mode: t.mode,
-    showValuesTag: t.showValuesTag,
+    // Kept so the stored shape matches the original app. Part labels (and so
+    // the values questions) are always shown now, as on the official test.
+    showValuesTag: true,
   };
 }
 
@@ -66,7 +67,6 @@ export function restoreSession(
     startedAt: typeof a.startedAt === "number" ? a.startedAt : Date.now(),
     deadline: a.timed && typeof a.endsAt === "number" ? a.endsAt : 0,
     mode: a.mode === "custom" ? "custom" : "official",
-    showValuesTag: a.showValuesTag === true,
   };
 }
 

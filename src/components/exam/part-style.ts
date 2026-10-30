@@ -32,3 +32,16 @@ export const PART_SHORT: Record<PartId, string> = {
   part4: "Australian values",
   glossary: "Glossary",
 };
+
+/**
+ * The part labels the official practice test shows above each question
+ * (checked 30 October 2026). Part 4 is the values part, so on the official
+ * test you can see which five questions are values questions.
+ */
+export const EXAM_PART_LABEL: Record<PartId, string> = {
+  part1: "Part 1 – Australia and its people",
+  part2: "Part 2 – Australia's democratic beliefs, rights and liberties",
+  part3: "Part 3 – Government and the law in Australia",
+  part4: "Part 4 – Australian values",
+  glossary: "Glossary",
+};

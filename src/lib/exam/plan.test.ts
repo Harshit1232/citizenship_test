@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CATEGORIES, QUESTIONS, RULES } from "@/lib/bank";
 import { defaultSettings } from "@/lib/settings";
 import type { Settings } from "@/lib/types";
-import { buildPaper, plan, seededRng, shuffle } from "./plan";
+import { allocate, buildPaper, byPartOrder, PART_ORDER, plan, seededRng, shuffle } from "./plan";
 
 const ALL_CATS = CATEGORIES.map((c) => c.id);
 const official = (): Settings => defaultSettings(ALL_CATS);
@@ -30,11 +30,13 @@ describe("question bank", () => {
 });
 
 describe("plan", () => {
-  it("official mode promises 20 questions with 5 values questions", () => {
+  it("official mode promises 20 questions with 5 values questions, from Parts 1 to 4 only", () => {
     const p = plan(official(), QUESTIONS, RULES);
     expect(p.want).toBe(20);
     expect(p.vCount).toBe(5);
-    expect(p.pool).toHaveLength(336);
+    // 336 minus the 20 glossary questions: the real test covers Parts 1 to 4.
+    expect(p.pool).toHaveLength(316);
+    expect(p.pool.some((q) => q.part === "glossary")).toBe(false);
   });
 
   it("custom mode with no values categories still draws 5 values questions when forced", () => {
@@ -91,6 +93,40 @@ describe("buildPaper", () => {
     }
   });
 
+  it("lays an official paper out like the official practice test: 5 per part, in part order, values last", () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const paper = buildPaper(official(), QUESTIONS, RULES, seededRng(seed));
+      const parts = paper.map((q) => q.part);
+      expect(parts).toEqual([
+        ...Array(5).fill("part1"),
+        ...Array(5).fill("part2"),
+        ...Array(5).fill("part3"),
+        ...Array(5).fill("part4"),
+      ]);
+      expect(paper.slice(15).every((q) => q.isValuesQuestion)).toBe(true);
+    }
+  });
+
+  it("varies which questions come from each part", () => {
+    const firsts = new Set<number>();
+    for (let seed = 1; seed <= 20; seed++) firsts.add(buildPaper(official(), QUESTIONS, RULES, seededRng(seed))[0].id);
+    expect(firsts.size).toBeGreaterThan(10);
+  });
+
+  it("keeps a longer official-format paper balanced across Parts 1 to 3", () => {
+    const paper = buildPaper({ ...official(), count: 40 }, QUESTIONS, RULES, seededRng(5));
+    const count = (part: string) => paper.filter((q) => q.part === part).length;
+    expect([count("part1"), count("part2"), count("part3"), count("part4")]).toEqual([12, 12, 11, 5]);
+  });
+
+  it("puts custom papers in part order too", () => {
+    const s: Settings = { ...official(), mode: "custom", cats: ALL_CATS, count: 30 };
+    for (let seed = 1; seed <= 20; seed++) {
+      const ranks = buildPaper(s, QUESTIONS, RULES, seededRng(seed)).map((q) => PART_ORDER.indexOf(q.part));
+      expect(ranks).toEqual(ranks.slice().sort((a, b) => a - b));
+    }
+  });
+
   it("is repeatable for the same seed", () => {
     const a = buildPaper(official(), QUESTIONS, RULES, seededRng(7)).map((q) => q.id);
     const b = buildPaper(official(), QUESTIONS, RULES, seededRng(7)).map((q) => q.id);
@@ -102,6 +138,25 @@ describe("buildPaper", () => {
     const p = plan(s, QUESTIONS, RULES);
     const paper = buildPaper(s, QUESTIONS, RULES, seededRng(3));
     expect(paper).toHaveLength(p.want);
+  });
+});
+
+describe("allocate", () => {
+  it("shares evenly, one at a time, without overfilling a group", () => {
+    expect(allocate(15, [101, 49, 112])).toEqual([5, 5, 5]);
+    expect(allocate(16, [101, 49, 112])).toEqual([6, 5, 5]);
+    expect(allocate(10, [2, 100, 100])).toEqual([2, 4, 4]);
+    expect(allocate(500, [2, 3])).toEqual([2, 3]);
+    expect(allocate(0, [5, 5])).toEqual([0, 0]);
+  });
+});
+
+describe("byPartOrder", () => {
+  it("sorts by part and keeps the order within a part", () => {
+    const values = QUESTIONS.filter((q) => q.isValuesQuestion).slice(0, 2);
+    const p1 = QUESTIONS.filter((q) => q.part === "part1").slice(0, 2);
+    const mixed = [values[1], p1[1], values[0], p1[0]];
+    expect(byPartOrder(mixed).map((q) => q.id)).toEqual([p1[1].id, p1[0].id, values[1].id, values[0].id]);
   });
 });
 

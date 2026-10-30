@@ -1,5 +1,6 @@
 import type { Scenario } from "@/data/values-scenarios";
 import { IconBook, IconCheck, IconCross } from "@/components/ui/icons";
+import { ListenButton } from "@/components/exam/listen-button";
 import { officialLinks } from "@/lib/site";
 import { cx } from "@/lib/cx";
 
@@ -48,9 +49,12 @@ export function WhyEachOption({
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <section aria-labelledby={`why-${scenario.id}`}>
-      <Heading id={`why-${scenario.id}`} className="text-small font-bold text-ink">
-        Why each answer is right or wrong
-      </Heading>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Heading id={`why-${scenario.id}`} className="text-small font-bold text-ink">
+          Why each answer is right or wrong
+        </Heading>
+        <ListenButton text={feedbackSpeech(scenario, chosen)} label="Listen to why" compact />
+      </div>
       <ul className="mt-3 space-y-2.5">
         {scenario.options.map((o, i) => {
           const right = i === scenario.answer;
@@ -111,6 +115,15 @@ export function BookletLink({ page }: { page: number }) {
       <span className="sr-only"> (opens the official booklet in a new tab)</span>
     </a>
   );
+}
+
+/** What the Listen button reads after answering: the right answer first, then your pick if it was wrong. */
+export function feedbackSpeech(s: Scenario, chosen: number | null): string {
+  const right = s.options[s.answer];
+  const parts = [`The right answer is: ${right.text}. ${right.why}`];
+  if (chosen !== null && chosen !== s.answer) parts.push(`You chose: ${s.options[chosen].text}. ${s.options[chosen].why}`);
+  parts.push(`Remember: ${s.takeaway}`);
+  return parts.join(" ");
 }
 
 /** Text for the Listen button. */

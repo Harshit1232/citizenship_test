@@ -72,7 +72,8 @@ export function SettingsScreen() {
   }
 
   function resetAll() {
-    const d = defaultSettings(ALL_CATS);
+    // Resets the test format only; the text size is a display choice.
+    const d = { ...defaultSettings(ALL_CATS), largeText: settings.largeText };
     apply(d);
     setCountText(String(d.count));
     setMinutesText(String(d.minutes));
@@ -100,7 +101,7 @@ export function SettingsScreen() {
               checked={official}
               onChange={() => apply({ ...settings, mode: "official" })}
               title="Same as the real test"
-              body="Questions from every part of the booklet, always including 5 values questions."
+              body="Questions from Parts 1 to 4 in order, as on the official practice test. The last part is the 5 values questions."
             />
             <ModeOption
               checked={!official}
@@ -175,7 +176,12 @@ export function SettingsScreen() {
       <Card className="mt-6" aria-labelledby="values-title">
         <CardTitle id="values-title">Australian values questions</CardTitle>
         <div className="mt-5 space-y-5">
-          {!official && (
+          {official ? (
+            <p className="text-small text-copy">
+              Every test in the real format has {RULES.valuesQuestionsPerTest} values questions, shown last as Part 4, as
+              on the official practice test. One wrong values answer fails the test.
+            </p>
+          ) : (
             <Check
               checked={settings.forceValues}
               onChange={(on) => apply({ ...settings, forceValues: on })}
@@ -183,12 +189,6 @@ export function SettingsScreen() {
               hint="On by default. The real test fails you for one wrong values answer, whatever your total."
             />
           )}
-          <Check
-            checked={settings.showValuesTag}
-            onChange={(on) => apply({ ...settings, showValuesTag: on })}
-            title="Label the values questions during a test"
-            hint="Off by default. The real test doesn't tell you which five they are, so leaving this off is the honest practice."
-          />
         </div>
       </Card>
 
@@ -309,6 +309,14 @@ export function SettingsScreen() {
             ))}
           </div>
         </fieldset>
+        <div className="mt-5">
+          <Check
+            checked={settings.largeText}
+            onChange={(on) => apply({ ...settings, largeText: on })}
+            title="Larger text during tests"
+            hint="Makes questions and answers bigger. You can also switch it on or off during a test."
+          />
+        </div>
       </Card>
 
       <Card className="mt-6" aria-labelledby="data-title">

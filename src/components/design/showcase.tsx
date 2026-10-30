@@ -3,7 +3,7 @@
 import { AnswerOptions } from "@/components/exam/answer-options";
 import { ExamTimer } from "@/components/exam/exam-timer";
 import { Explanation } from "@/components/exam/explanation";
-import { QuestionMap } from "@/components/exam/question-map";
+import { QuestionList, StatusLegend } from "@/components/exam/question-map";
 import { Button } from "@/components/ui/button";
 import { WattleMark } from "@/components/brand/wattle-mark";
 import { SAMPLE_QUESTION } from "@/lib/marketing-data";
@@ -171,19 +171,20 @@ export function DesignShowcase() {
 
       <Section title="Exam controls">
         <div className="grid gap-10 sm:grid-cols-2">
-          <div className="max-w-[300px] rounded-lg border border-line bg-surface p-5">
-            <QuestionMap
+          <div className="max-w-[260px] rounded-lg border border-line bg-surface py-3">
+            <QuestionList
               picks={[0, 1, null, 2, 0, null, null, 1, 0, null, 2, 2, null, null, 0, 1, null, null, null, null]}
               flags={[false, false, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false]}
               current={3}
               onJump={() => {}}
             />
+            <StatusLegend className="mt-3 border-t border-line px-4 pt-3" />
           </div>
           <div className="space-y-5">
             <p className="text-small text-muted">Timer: normal, 10 minutes, 5 minutes, last minute</p>
             {[1800, 540, 240, 45].map((s) => (
-              <div key={s} className="w-40">
-                <ExamTimer secondsLeft={s} totalSeconds={2700} />
+              <div key={s}>
+                <ExamTimer secondsLeft={s} />
               </div>
             ))}
           </div>

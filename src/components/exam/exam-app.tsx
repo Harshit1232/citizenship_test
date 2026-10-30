@@ -111,7 +111,6 @@ export function ExamApp() {
       startedAt,
       deadline: settings.timerOn ? startedAt + settings.minutes * 60_000 : 0,
       mode: settings.mode,
-      showValuesTag: settings.showValuesTag,
     };
     clearActive();
     saveActive(test);
@@ -138,10 +137,16 @@ export function ExamApp() {
       <ExamScreen
         test={view.test}
         now={now}
+        largeText={settings.largeText}
+        onLargeText={(on) => {
+          const next = { ...settings, largeText: on };
+          saveSettings(next);
+          setSettings(next);
+        }}
         onPick={(choice) => update((t) => ({ ...t, picks: t.picks.map((p, i) => (i === t.cur ? choice : p)) }))}
         onMove={(to) => update((t) => ({ ...t, cur: Math.min(t.paper.length - 1, Math.max(0, to)) }))}
         onToggleFlag={() => update((t) => ({ ...t, flags: t.flags.map((f, i) => (i === t.cur ? !f : f)) }))}
-        onFinish={() => finish(view.test, false)}
+        onSubmit={() => finish(view.test, false)}
         onExit={() => {
           saveActive(view.test);
           router.push("/practice/");

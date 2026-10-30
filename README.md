@@ -19,9 +19,36 @@ npm run dev          # http://localhost:3000
 |---|---|
 | `npm run dev` | Development server |
 | `npm run build` | Static export to `out/` |
-| `npm test` | Unit tests (Vitest): exam rules, scoring, session restore, storage migration, progress, study, marketing numbers |
+| `npm run serve` | Serves `out/` at http://localhost:4321 with the production security headers |
+| `npm test` | Unit and component tests (Vitest; components in jsdom with Testing Library) |
+| `npm run test:e2e` | End-to-end tests (Playwright, Chromium) against the built site. Run `npm run build` first. |
 | `npm run typecheck` | TypeScript, no emit |
 | `npm run lint` | ESLint (Next config) |
+| `npm run check` | Everything above, in order, as CI runs it |
+
+## Tests
+
+There are three layers. GitHub Actions runs all of them on every push to `main` and on every pull request (`.github/workflows/ci.yml`).
+
+- **Unit tests** (`src/**/*.test.ts`, Node) cover:
+  - the rules: paper building in part order, marking, the values rule and readiness
+  - data: saving and resuming, storage migration, the question bank and scenario content
+- **Component tests** (`src/**/*.test.tsx`, jsdom) drive real screens with a simulated user:
+  - a whole test from start to result, with the Submit lock, the warning dialog, and resuming after leaving
+  - the result page's pass and fail cases
+  - a values scenario and the values gate
+  - the readiness card
+- **End-to-end tests** (`e2e/`, real Chromium, desktop and phone sizes) run against the built site, served with the production headers:
+  - the full test flow, reloading mid-test, and the clock running out
+  - keyboard answering, the values track, and data saved by the original app
+  - axe accessibility checks on every page and on each state of the test
+  - a check that no page logs an error or breaks the Content-Security-Policy
+
+First time on a new machine, install the browser once:
+
+```bash
+npx playwright install chromium
+```
 
 ## Deploy
 
@@ -59,13 +86,14 @@ src/
   app/                 routes, global CSS (design tokens), fonts
   components/
     marketing/         home page sections, content page shell
-    exam/              test UI: answer options, timer, map, results, values check
+    exam/              test UI laid out like the official practice test: question list, timer, results, values check
     practice/          practice nav, overview, study, progress (charts, heatmap), settings, readiness check
     values/            values hub, scenario player, values gate
     ui/                Button, Dialog, icons
     brand/ theme/ design/
   data/question-bank.json   336 questions (54 values), extracted from the original HTML
   data/values-scenarios.ts  38 values scenarios, one per rule in Part 4 of the booklet
+  test/setup.ts        component-test setup (jsdom, dialog support, clean storage)
   lib/
     exam/              plan.ts (paper building), score.ts (marking), session.ts (save and resume)
     storage/           localStorage wrapper with in-memory fallback, schema migration
@@ -77,6 +105,14 @@ src/
     readiness.ts       the published readiness rule
     site.ts            name, price, official links: the owner's decisions in one file
     marketing-data.ts  numbers used in marketing copy, tested against the bank
+```
+
+Outside `src/`:
+
+```
+e2e/                   Playwright end-to-end tests
+scripts/serve-static.mjs  dependency-free static server with the production headers
+playwright.config.ts   desktop and phone projects; starts the server itself
 ```
 
 ## Docs

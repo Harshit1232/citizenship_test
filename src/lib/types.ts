@@ -57,7 +57,14 @@ export interface Settings {
   timerOn: boolean;
   minutes: number;
   forceValues: boolean;
+  /**
+   * No longer used: part labels are always shown, as on the official
+   * practice test, and Part 4 is the values part. Kept so stored settings
+   * from the original app keep their shape.
+   */
   showValuesTag: boolean;
+  /** Larger question and answer text during a test. */
+  largeText: boolean;
 }
 
 export interface CategoryTally {
@@ -102,6 +109,7 @@ export interface ActiveSession {
   endsAt: number;
   timed: boolean;
   mode: TestMode;
+  /** Written as true; not read. See Settings.showValuesTag. */
   showValuesTag: boolean;
 }
 

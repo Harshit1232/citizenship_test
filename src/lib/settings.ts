@@ -11,6 +11,7 @@ export function defaultSettings(allCategoryIds: readonly string[]): Settings {
     minutes: 45,
     forceValues: true,
     showValuesTag: false,
+    largeText: false,
   };
 }
 
@@ -25,6 +26,7 @@ export function loadSettings(allCategoryIds: readonly string[]): Settings {
   merged.timerOn = merged.timerOn !== false;
   merged.forceValues = merged.forceValues !== false;
   merged.showValuesTag = merged.showValuesTag === true;
+  merged.largeText = merged.largeText === true;
   return merged;
 }
 

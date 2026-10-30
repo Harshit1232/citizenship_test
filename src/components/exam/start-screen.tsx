@@ -25,8 +25,8 @@ export function StartScreen({ settings, plan, onStart, onUseOfficial }: StartScr
           Practice test
         </h1>
         <p className="mt-4 max-w-[52ch] text-lead">
-          This test works like the real one. Find a quiet place and take it in one sitting if you
-          can.
+          Laid out like the official practice test, so test day looks familiar. Find a quiet place and
+          take it in one sitting if you can.
         </p>
       </div>
 
@@ -63,25 +63,31 @@ export function StartScreen({ settings, plan, onStart, onUseOfficial }: StartScr
 
       <h2 className="mt-12 font-display text-title font-bold">During the test</h2>
       <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Tip icon={<IconBook size={20} />} title="Questions come in part order">
+          {settings.mode === "official"
+            ? "Each question shows its part of the booklet. Part 4, the last five, is Australian values."
+            : "Each question shows its part of the booklet. Values questions are Part 4."}
+        </Tip>
+        <Tip icon={<IconFlag size={20} />} title="Answer every question to submit">
+          Tick Review later on any you are unsure of. Submit works once all have an answer.
+        </Tip>
+        <Tip icon={<IconSpeaker size={20} />} title="Listen and larger text">
+          Listen reads the question and answers aloud. Larger text makes them bigger.
+        </Tip>
         <Tip icon={<IconClock size={20} />} title="Your answers save as you go">
           If you close the page, you can carry on later. The clock keeps running.
         </Tip>
-        <Tip icon={<IconFlag size={20} />} title="Mark questions to review">
-          Use Review later, then come back from the question list before you finish.
-        </Tip>
-        <Tip icon={<IconSpeaker size={20} />} title="Listen to any question">
-          Listen reads the question and its answers aloud.
-        </Tip>
-        <Tip icon={<IconBook size={20} />} title="Learn why afterwards">
-          Every question you miss shows the reason and its page in the booklet.
-        </Tip>
       </ul>
+      <p className="mt-6 max-w-[60ch] text-small text-muted">
+        After you submit, you see your result the way the official practice test shows it, then every question you
+        missed with the reason and its page in the booklet.
+      </p>
 
-      <div className="mt-12 flex flex-wrap items-center gap-4">
+      <div className="mt-10 flex flex-wrap items-center gap-4">
         <Button size="lg" onClick={onStart} disabled={plan.want < 1}>
           Start the test
         </Button>
-        <p className="text-small text-muted">Keyboard: press A, B or C to choose an answer.</p>
+        <p className="text-small text-muted">Keyboard: Tab to the answers, then use the arrow keys.</p>
       </div>
     </main>
   );

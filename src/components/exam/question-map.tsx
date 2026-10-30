@@ -1,65 +1,102 @@
 "use client";
 
-import { IconFlag } from "@/components/ui/icons";
+import { useEffect, useRef } from "react";
 import type { AnswerPick } from "@/lib/types";
 import { cx } from "@/lib/cx";
 
-interface QuestionMapProps {
+interface QuestionListProps {
   picks: readonly AnswerPick[];
   flags: readonly boolean[];
   current: number;
   onJump: (index: number) => void;
+  className?: string;
 }
 
-/** Every question as a numbered square: answered, flagged for review, current. */
-export function QuestionMap({ picks, flags, current, onJump }: QuestionMapProps) {
-  const answered = picks.filter((p) => p !== null).length;
-  const flagged = flags.filter(Boolean).length;
+export type QuestionStatus = "unanswered" | "answered" | "review";
+
+export function questionStatus(pick: AnswerPick, flag: boolean): QuestionStatus {
+  if (flag) return "review";
+  return pick === null ? "unanswered" : "answered";
+}
+
+const STATUS_TEXT: Record<QuestionStatus, string> = {
+  unanswered: "Not answered",
+  answered: "Answered",
+  review: "Review later",
+};
+
+/** The status marks the official test uses: dashed ring, filled circle, question mark. */
+export function StatusIcon({ status, className }: { status: QuestionStatus; className?: string }) {
   return (
-    <div>
-      <ol className="grid grid-cols-5 gap-2" aria-label="Questions">
-        {picks.map((p, i) => {
-          const isCurrent = i === current;
-          const done = p !== null;
-          const flag = flags[i];
-          return (
-            <li key={i}>
-              <button
-                type="button"
-                onClick={() => onJump(i)}
-                aria-current={isCurrent ? "step" : undefined}
-                aria-label={`Question ${i + 1}: ${done ? "answered" : "not answered"}${flag ? ", flagged for review" : ""}`}
-                className={cx(
-                  "relative grid aspect-square w-full min-h-11 place-items-center rounded-sm border-2 text-small font-bold tabular-nums",
-                  "transition-[background-color,border-color,color,transform] duration-150 active:scale-95",
-                  !done && "border-line-strong/60 bg-surface text-muted hover:border-ink",
-                  done && "border-euc bg-euc-tint text-euc-deep hover:border-euc-deep",
-                  isCurrent && "ring-2 ring-ink ring-offset-2 ring-offset-surface",
-                )}
-              >
-                {i + 1}
-                {flag && (
-                  <span className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border-2 border-surface bg-wattle text-on-wattle">
-                    <IconFlag size={11} strokeWidth={2.6} />
-                  </span>
-                )}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-      <dl className="mt-4 grid grid-cols-2 gap-2 text-small">
-        <div className="rounded-sm bg-sunk px-3 py-2">
-          <dt className="text-caption text-muted">Answered</dt>
-          <dd className="font-bold text-ink tabular-nums">
-            {answered} of {picks.length}
-          </dd>
-        </div>
-        <div className="rounded-sm bg-sunk px-3 py-2">
-          <dt className="text-caption text-muted">To review</dt>
-          <dd className="font-bold text-ink tabular-nums">{flagged}</dd>
-        </div>
-      </dl>
-    </div>
+    <span
+      aria-hidden="true"
+      className={cx(
+        "grid size-5 shrink-0 place-items-center rounded-full text-[0.7rem] font-extrabold leading-none",
+        status === "unanswered" && "border-2 border-dashed border-line-strong",
+        status === "answered" && "bg-euc",
+        status === "review" && "bg-wattle-text text-paper",
+        className,
+      )}
+    >
+      {status === "review" ? "?" : null}
+    </span>
+  );
+}
+
+/**
+ * Every question as a row, like the official test's left-hand list:
+ * "Question 1" to "Question 20", each with its status.
+ */
+export function QuestionList({ picks, flags, current, onJump, className }: QuestionListProps) {
+  const listRef = useRef<HTMLOListElement>(null);
+
+  // Keep the current question in view when the list scrolls.
+  useEffect(() => {
+    const el = listRef.current?.querySelector<HTMLElement>('[aria-current="step"]');
+    el?.scrollIntoView({ block: "nearest" });
+  }, [current]);
+
+  return (
+    <ol ref={listRef} aria-label="Questions" className={cx("flex flex-col", className)}>
+      {picks.map((p, i) => {
+        const isCurrent = i === current;
+        const status = questionStatus(p, flags[i]);
+        const answered = p !== null;
+        const label =
+          status === "review"
+            ? `${answered ? "answered" : "not answered"}, marked review later`
+            : STATUS_TEXT[status].toLowerCase();
+        return (
+          <li key={i}>
+            <button
+              type="button"
+              onClick={() => onJump(i)}
+              aria-current={isCurrent ? "step" : undefined}
+              aria-label={`Question ${i + 1}, ${label}`}
+              className={cx(
+                "flex min-h-9 w-full items-center gap-3 border-l-4 py-1 pl-3 pr-2 text-left text-small transition-colors duration-150",
+                isCurrent ? "border-euc bg-euc-tint font-bold text-ink" : "border-transparent text-copy hover:bg-sunk hover:text-ink",
+              )}
+            >
+              <StatusIcon status={status} />
+              <span className="tabular-nums">Question {i + 1}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+export function StatusLegend({ className }: { className?: string }) {
+  return (
+    <ul className={cx("flex flex-wrap gap-x-4 gap-y-2 text-caption text-muted", className)} aria-label="Key">
+      {(Object.keys(STATUS_TEXT) as QuestionStatus[]).map((s) => (
+        <li key={s} className="flex items-center gap-1.5">
+          <StatusIcon status={s} className="size-4 text-[0.6rem]" />
+          {STATUS_TEXT[s]}
+        </li>
+      ))}
+    </ul>
   );
 }

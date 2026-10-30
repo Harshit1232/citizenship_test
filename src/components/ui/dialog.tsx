@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
 interface DialogProps {
@@ -19,6 +19,8 @@ interface DialogProps {
  */
 export function Dialog({ open, onClose, title, children, sheet, className }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  // Unique per dialog: a page can hold several, and they must not share an id.
+  const titleId = useId();
 
   useEffect(() => {
     const el = ref.current;
@@ -30,7 +32,7 @@ export function Dialog({ open, onClose, title, children, sheet, className }: Dia
   return (
     <dialog
       ref={ref}
-      aria-labelledby="dialog-title"
+      aria-labelledby={titleId}
       onClose={onClose}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
@@ -45,7 +47,7 @@ export function Dialog({ open, onClose, title, children, sheet, className }: Dia
       )}
     >
       <div className="p-6 sm:p-7">
-        <h2 id="dialog-title" className="font-display text-title font-bold text-ink">
+        <h2 id={titleId} className="font-display text-title font-bold text-ink">
           {title}
         </h2>
         <div className="mt-3">{children}</div>
